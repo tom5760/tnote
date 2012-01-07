@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>tnote</title>
+        <link rel='stylesheet' href='static/css/style.css'/>
+        <link rel='stylesheet' href='static/css/ui-lightness/jquery-ui-1.8.16.custom.css'/>
+        <script src='static/js/jquery-1.7.1.min.js'></script>
+        <script src='static/js/jquery-ui-1.8.16.custom.min.js'></script>
+        <script src='static/js/tnote.js'></script>
+    </head>
+    <body>
+        <div id='main'>
+            <div id='sidebar'>
+                <nav id='toolbar'>
+                    <ul>
+                        <li><a href='#'><img src='/static/img/add.png' title='New Note'/></a></li>
+                        <li><a href='#'><img src='/static/img/add.png' title='New Note'/></a></li>
+                        <li><a href='#'><img src='/static/img/add.png' title='New Note'/></a></li>
+                    </ul>
+                </nav>
+                <div id='accordion'>
+                    <h3><a href='#favorites' id='favorites'>Favorites</a></h3>
+                    <ul>
+                        <li><a href='#'>Start</a></li>
+                        <li><a href='#'>To-Do</a></li>
+                    </ul>
+                    <h3><a href='#tags' id='tags'>Tags</a></h3>
+                    <ul>
+                        <li><a href='#'>Work</a></li>
+                        <li><a href='#'>Play</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div id='notebook'>
+                <article>
+                    <header>Start</header>
+                    <p>Hello world!</p>
+                    <footer>Attachments:
+                        <ul>
+                            <li><a href='#'>foo.pdf</a></li>
+                        </ul>
+                    </footer>
+                </article>
+                <article>
+                    <header>To-Do</header>
+                    <p>Things I have to do...</p>
+                    <ul>
+                        <li>Finish this program.</li>
+                        <li>Other stuff.</li>
+                    </ul>
+                    <footer>Attachments:
+                        <ul>
+                            <li><a href='#'>foo.pdf</a></li>
+                        </ul>
+                    </footer>
+                </article>
+            </div>
+        </div>
+    </body>
+</html>

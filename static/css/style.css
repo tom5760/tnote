@@ -1,0 +1,66 @@
+#main {
+    display: table;
+    border: 1px solid black;
+    margin: 0 auto;
+    width: 80%;
+}
+
+#sidebar {
+    display: table-cell;
+    width: 15%;
+    border-right: 1px solid black;
+}
+
+#toolbar {
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid black;
+}
+
+#toolbar ul {
+    display: inline;
+}
+
+#toolbar li {
+    display: inline;
+}
+
+#notebook {
+    display: table-cell;
+    width: 85%;
+    padding: 0 10px;
+}
+
+#notebook article {
+    border: 1px solid black;
+    border-radius: 7px;
+    margin: 10px 0;
+}
+
+#notebook article p {
+    padding: 0 10px;
+}
+
+#notebook article header {
+    background-color: lightblue;
+    border-radius: 7px 7px 0 0;
+    padding: 4px;
+    font-size: 1.25em;
+}
+
+#notebook article footer {
+    background-color: lightgrey;
+    border-radius: 0 0 7px 7px;
+    padding: 4px;
+    font-size: .7em;
+}
+
+#notebook article footer ul {
+    display: inline;
+    list-style-type: none;
+    padding: 0;
+}
+
+#notebook article footer ul li {
+    display: inline;
+}
