@@ -31,36 +31,36 @@
     padding: 0 10px;
 }
 
-#notebook article {
+#notebook div.note {
     border: 1px solid black;
     border-radius: 7px;
     margin: 10px 0;
 }
 
-#notebook article p {
+#notebook article {
     padding: 0 10px;
 }
 
-#notebook article header {
+#notebook header {
     background-color: lightblue;
     border-radius: 7px 7px 0 0;
     padding: 4px;
     font-size: 1.25em;
 }
 
-#notebook article footer {
+#notebook footer {
     background-color: lightgrey;
     border-radius: 0 0 7px 7px;
     padding: 4px;
     font-size: .7em;
 }
 
-#notebook article footer ul {
+#notebook footer ul {
     display: inline;
     list-style-type: none;
     padding: 0;
 }
 
-#notebook article footer ul li {
+#notebook footer ul li {
     display: inline;
 }

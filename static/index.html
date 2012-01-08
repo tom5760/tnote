@@ -21,39 +21,23 @@
                 <div id='accordion'>
                     <h3><a href='#' id='favorites'>Favorites</a></h3>
                     <ul>
-                        <li><a href='#'>Start</a></li>
-                        <li><a href='#'>To-Do</a></li>
+                        <li><a href='/note/start' class='local'>Start</a></li>
+                        <li><a href='/note/to-do' class='local'>To-Do</a></li>
                     </ul>
                     <h3><a href='#' id='tags'>Tags</a></h3>
                     <ul>
-                        <li><a href='#'>Work</a></li>
-                        <li><a href='#'>Play</a></li>
+                        <li><a href='#' class='local'>Work</a></li>
+                        <li><a href='#' class='local'>Play</a></li>
                     </ul>
                 </div>
             </div>
             <div id='notebook'>
-                <article>
-                    <header>Start</header>
-                    <p>Hello world!</p>
-                    <footer>Attachments:
-                        <ul>
-                            <li><a href='#'>foo.pdf</a></li>
-                        </ul>
-                    </footer>
-                </article>
-                <article>
-                    <header>To-Do</header>
-                    <p>Things I have to do...</p>
-                    <ul>
-                        <li>Finish this program.</li>
-                        <li>Other stuff.</li>
-                    </ul>
-                    <footer>Attachments:
-                        <ul>
-                            <li><a href='#'>foo.pdf</a></li>
-                        </ul>
-                    </footer>
-                </article>
+                <!-- This note block is cloned for each new note displayed. -->
+                <div class='note'>
+                    <header></header>
+                    <article></article>
+                    <footer>Attachments: <ul></ul></footer>
+                </div>
             </div>
         </div>
     </body>

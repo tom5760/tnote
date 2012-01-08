@@ -29,11 +29,14 @@ class TNote(object):
 
     @cherrypy.expose
     def note(self, name):
-        return json.dumps({
-            'name': 'start',
-            'title': 'Start',
-            'content': '<p>Hello world!</p>',
-        })
+        cherrypy.response.headers['Content-Type'] = 'application/json'
+        return bytes(json.dumps({
+            'title': name,
+            'content': self.notebook.load_note(name),
+            'attachments': [
+                {'name': 'foo.pdf'},
+            ],
+        }), 'utf-8')
 
 class Notebook(object):
     def __init__(self, directory):
