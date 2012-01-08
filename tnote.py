@@ -5,54 +5,35 @@
     Author: Tom Wambold <tom5760@gmail.com>
 '''
 
-import http.server
 import json
 import os
 import os.path
-import posixpath
 import sys
-import urllib
 
+import cherrypy
 import misaka
 
-class NoteRequest(http.server.SimpleHTTPRequestHandler):
-    def __init__(self, notebook, *args):
+class TNote(object):
+    def __init__(self, notebook):
+        super().__init__()
         self.notebook = notebook
-        super().__init__(*args)
 
-    def do_GET(self):
-        if self.path.startswith('/note'):
-            self.send_note()
-        else:
-            super().do_GET()
+    @cherrypy.expose
+    def index(self):
+        return self.static('index.html')
 
-    def translate_path(self, path):
-        if path.startswith('/static'):
-            path = path[7:]
+    @cherrypy.expose
+    def static(self, *path):
+        path = os.path.join(self.notebook.static_dir, *path)
+        return cherrypy.lib.static.serve_file(path)
 
-        # From http://hg.python.org/cpython/file/3.2/Lib/http/server.py
-        path = path.split('?', 1)[0]
-        path = path.split('#', 1)[0]
-        path = posixpath.normpath(urllib.parse.unquote(path))
-        words = path.split('/')
-        words = filter(None, words)
-        path = self.notebook.static_dir
-        for word in words:
-            drive, word = os.path.splitdrive(word)
-            head, word = os.path.split(word)
-            if word in (os.curdir, os.pardir): continue
-            path = os.path.join(path, word)
-        return path
-
-    def send_note(self):
-        self.send_response(200)
-        self.send_header('Content-Type', 'application/json')
-        self.end_headers()
-        self.wfile.write(bytes(json.dumps({
+    @cherrypy.expose
+    def note(self, name):
+        return json.dumps({
             'name': 'start',
             'title': 'Start',
             'content': '<p>Hello world!</p>',
-        }), 'utf-8'))
+        })
 
 class Notebook(object):
     def __init__(self, directory):
@@ -77,14 +58,8 @@ def main(argv):
         notebook_dir = os.getcwd()
 
     notebook = Notebook(notebook_dir)
-
-    address = ('localhost', 8080)
-
-    httpd = http.server.HTTPServer(address,
-            lambda *args: NoteRequest(notebook, *args))
-
-    print('Starting server on "{}:{}"'.format(*address))
-    httpd.serve_forever()
+    print('Starting server...')
+    cherrypy.quickstart(TNote(notebook))
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
