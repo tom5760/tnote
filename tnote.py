@@ -5,58 +5,44 @@
     Author: Tom Wambold <tom5760@gmail.com>
 '''
 
-import sys
+import json
 import os
 import os.path
+import sys
 
+import cherrypy
 import misaka
 
-from gi.repository import Gtk, WebKit
-
 class TNote(object):
-    UI_MAIN_WINDOW = 'main_window.xml'
-    ID_MAIN_WINDOW = 'main_window'
-    ID_NOTE_BOX = 'note_box'
-
     def __init__(self, notebook):
+        super().__init__()
         self.notebook = notebook
-        self.builder = Gtk.Builder()
-        self.builder.add_from_file(TNote.UI_MAIN_WINDOW)
 
+    @cherrypy.expose
+    def index(self):
+        return self.static('index.html')
 
-    def init_ui(self):
-        main_window = self.builder.get_object(TNote.ID_MAIN_WINDOW)
-        main_window.connect('destroy', Gtk.main_quit)
-        self.load_note('start')
-        main_window.show_all()
+    @cherrypy.expose
+    def static(self, *path):
+        path = os.path.join(self.notebook.static_dir, *path)
+        return cherrypy.lib.static.serve_file(path)
 
-    def load_note(self, note):
-        note_box = self.builder.get_object(TNote.ID_NOTE_BOX)
-
-        frame = Gtk.Frame(label=note.capitalize())
-        note_box.add(frame)
-
-        web_settings = WebKit.WebSettings(enable_default_context_menu=False)
-
-        web_view = WebKit.WebView(settings=web_settings)
-        frame.add(web_view)
-
-        web_view.load_string(self.notebook.load_note(note), 'text/html',
-                             'UTF-8', '/')
-
-        web_view.set_maintains_back_forward_list(False)
-        web_view.connect('navigation-policy-decision-requested',
-                         self.navigation)
-
-    def navigation(self, view, frame, request, navigation_action, policy_decision):
-        #print(view, frame, request, navigation_action, policy_decision)
-        policy_decision.ignore()
-        print(request.get_uri())
+    @cherrypy.expose
+    def note(self, name):
+        cherrypy.response.headers['Content-Type'] = 'application/json'
+        return bytes(json.dumps({
+            'title': name,
+            'content': self.notebook.load_note(name),
+            'attachments': [
+                {'name': 'foo.pdf'},
+            ],
+        }), 'utf-8')
 
 class Notebook(object):
     def __init__(self, directory):
         self.directory = directory
         self.source_dir = os.path.join(directory, 'src')
+        self.static_dir = os.path.join(directory, 'static')
 
     def load_note(self, note):
         path = os.path.join(self.source_dir, note) + '.md'
@@ -75,9 +61,8 @@ def main(argv):
         notebook_dir = os.getcwd()
 
     notebook = Notebook(notebook_dir)
-    tnote = TNote(notebook)
-    tnote.init_ui()
-    Gtk.main()
+    print('Starting server...')
+    cherrypy.quickstart(TNote(notebook))
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))

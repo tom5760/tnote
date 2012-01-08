@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>tnote</title>
+        <link rel='stylesheet' href='static/css/style.css'/>
+        <link rel='stylesheet' href='static/css/ui-lightness/jquery-ui-1.8.16.custom.css'/>
+        <script src='static/js/jquery-1.7.1.min.js'></script>
+        <script src='static/js/jquery-ui-1.8.16.custom.min.js'></script>
+        <script src='static/js/tnote.js'></script>
+    </head>
+    <body>
+        <div id='main'>
+            <div id='sidebar'>
+                <nav id='toolbar'>
+                    <ul>
+                        <li><a href='#'><img src='/static/img/add.png' title='New Note'/></a></li>
+                        <li><a href='#'><img src='/static/img/add.png' title='New Note'/></a></li>
+                        <li><a href='#'><img src='/static/img/add.png' title='New Note'/></a></li>
+                    </ul>
+                </nav>
+                <div id='accordion'>
+                    <h3><a href='#' id='favorites'>Favorites</a></h3>
+                    <ul>
+                        <li><a href='/note/start' class='local'>Start</a></li>
+                        <li><a href='/note/to-do' class='local'>To-Do</a></li>
+                    </ul>
+                    <h3><a href='#' id='tags'>Tags</a></h3>
+                    <ul>
+                        <li><a href='#' class='local'>Work</a></li>
+                        <li><a href='#' class='local'>Play</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div id='notebook'>
+                <!-- This note block is cloned for each new note displayed. -->
+                <div class='note'>
+                    <header></header>
+                    <article></article>
+                    <footer>Attachments: <ul></ul></footer>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
