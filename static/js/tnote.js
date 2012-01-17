@@ -66,13 +66,13 @@ function wikiLink() {
 }
 
 $(document).ready(function() {
-    // Initialize the accordion widget in the sidebar.
-    $('#accordion').accordion({header: 'h3', fillSpace: true});
+    // Initialize the tabs widget in the sidebar.
+    $('#menu').tabs();
 
     // Hide the starting template note.
     $('.note').hide();
 
-    $('#accordion ul a').click(wikiLink);
+    $('#menu div ul a').click(wikiLink);
 
     getItem('/note/start');
 });

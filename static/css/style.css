@@ -21,6 +21,10 @@
     display: inline;
 }
 
+#menu .ui-tabs-nav {
+    font-size: small;
+}
+
 #notebook {
     display: table-cell;
     width: 85%;

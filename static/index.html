@@ -18,17 +18,23 @@
                         <li><a href='#'><img src='/static/img/add.png' title='New Note'/></a></li>
                     </ul>
                 </nav>
-                <div id='accordion'>
-                    <h3><a href='#' id='favorites'>Favorites</a></h3>
+                <div id='menu'>
                     <ul>
-                        <li><a href='/note/start'>Start</a></li>
-                        <li><a href='/note/to-do'>To-Do</a></li>
+                        <li><a href='#favorites'>Favorites</a></li>
+                        <li><a href='#tags'>Tags</a></li>
                     </ul>
-                    <h3><a href='#' id='tags'>Tags</a></h3>
-                    <ul>
-                        <li><a href='/tag/work'>Work</a></li>
-                        <li><a href='/tag/play'>Play</a></li>
-                    </ul>
+                    <div id="favorites">
+                        <ul>
+                            <li><a href='/note/start'>Start</a></li>
+                            <li><a href='/note/to-do'>To-Do</a></li>
+                        </ul>
+                    </div>
+                    <div id="tags">
+                        <ul>
+                            <li><a href='/tag/work'>Work</a></li>
+                            <li><a href='/tag/play'>Play</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div id='notebook'>
