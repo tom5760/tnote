@@ -17,7 +17,13 @@ function getItem(path) {
         }
         note.show();
         $('#notebook').prepend(note)
-        note.find('a').click(wikiLink);
+        note.find('article a').click(wikiLink);
+        note.find('.close').click(function() {
+            note.remove();
+        });
+        note.find('.closeothers').click(function() {
+            $('.note').not(':last').not(note).remove();
+        });
     });
 }
 
