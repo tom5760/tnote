@@ -30,9 +30,11 @@ class TNote(object):
     @cherrypy.expose
     def note(self, name):
         cherrypy.response.headers['Content-Type'] = 'application/json'
+        note = self.notebook.load_note(name)
         return bytes(json.dumps({
             'title': name,
-            'content': self.notebook.load_note(name),
+            'raw': note,
+            'html': misaka.html(note),
             'attachments': [
                 {'name': 'foo.pdf'},
             ],
@@ -48,8 +50,7 @@ class Notebook(object):
         path = os.path.join(self.source_dir, note) + '.md'
         print('Loading file "{}"'.format(path))
         with open(path) as f:
-            page = misaka.html(f.read(None))
-        return page
+            return f.read(None)
 
 def main(argv):
     if len(argv) > 2:

@@ -7,8 +7,8 @@ function getItem(path) {
         note.find('.render header > p').append(data.title);
         note.find('.edit header input').val(data.title);
 
-        note.find('.render article').append(data.content);
-        note.find('.edit article textarea').val(data.content);
+        note.find('.render article').append(data.html);
+        note.find('.edit article textarea').val(data.raw);
 
         if (data.attachments.length > 0) {
             $.each(data.attachments, function(i) {
