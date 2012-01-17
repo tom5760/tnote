@@ -17,17 +17,31 @@
     border-bottom: 1px solid black;
 }
 
-#toolbar ul {
-    display: inline;
-}
-
-#toolbar li {
+#toolbar ul, #toolbar li {
     display: inline;
 }
 
 #notebook {
     display: table-cell;
     width: 85%;
+    padding: 0 10px;
+}
+
+.note header, .note header p, .note header ul {
+    margin: 0;
+    padding: 0;
+}
+
+.note header p, .note header li {
+    display: inline;
+}
+
+.note header ul {
+    float: right;
+    font-size: small;
+}
+
+.note header li {
     padding: 0 10px;
 }
 
