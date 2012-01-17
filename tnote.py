@@ -14,9 +14,11 @@ import cherrypy
 import misaka
 
 class TNote(object):
-    def __init__(self, notebook):
+    def __init__(self, directory):
         super().__init__()
-        self.notebook = notebook
+        self.directory = directory
+        self.source_dir = os.path.join(directory, 'notes')
+        self.static_dir = os.path.join(directory, 'static')
 
     @cherrypy.expose
     def index(self):
@@ -24,33 +26,38 @@ class TNote(object):
 
     @cherrypy.expose
     def static(self, *path):
-        path = os.path.join(self.notebook.static_dir, *path)
+        path = os.path.join(self.static_dir, *path)
         return cherrypy.lib.static.serve_file(path)
 
     @cherrypy.expose
-    def note(self, name):
+    def note(self, name, title=None, body=None):
+        if cherrypy.request.method == 'GET':
+            title = name
+            body = self.load_note(name)
+        else:
+            self.save_note(name, body)
+
         cherrypy.response.headers['Content-Type'] = 'application/json'
-        note = self.notebook.load_note(name)
         return bytes(json.dumps({
-            'title': name,
-            'raw': note,
-            'html': misaka.html(note),
+            'title': title,
+            'raw': body,
+            'html': misaka.html(body),
             'attachments': [
                 {'name': 'foo.pdf'},
             ],
         }), 'utf-8')
-
-class Notebook(object):
-    def __init__(self, directory):
-        self.directory = directory
-        self.source_dir = os.path.join(directory, 'notes')
-        self.static_dir = os.path.join(directory, 'static')
 
     def load_note(self, note):
         path = os.path.join(self.source_dir, note) + '.md'
         print('Loading file "{}"'.format(path))
         with open(path) as f:
             return f.read(None)
+
+    def save_note(self, note, body):
+        path = os.path.join(self.source_dir, note) + '.md'
+        print('Saving file "{}"'.format(path))
+        with open(path, 'w') as f:
+            f.write(body)
 
 def main(argv):
     if len(argv) > 2:
@@ -61,9 +68,8 @@ def main(argv):
     else:
         notebook_dir = os.getcwd()
 
-    notebook = Notebook(notebook_dir)
     print('Starting server...')
-    cherrypy.quickstart(TNote(notebook))
+    cherrypy.quickstart(TNote(notebook_dir))
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
