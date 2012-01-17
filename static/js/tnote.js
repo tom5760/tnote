@@ -3,7 +3,7 @@ function getItem(path) {
     $.getJSON(path, function(data) {
         console.log('Got note:', data);
         var note = $('.note:last').clone(true, true);
-        note.find('header').append(data.title);
+        note.find('header > p').append(data.title);
         note.find('article').append(data.content);
 
         if (data.attachments.length > 0) {
@@ -17,26 +17,27 @@ function getItem(path) {
         }
         note.show();
         $('#notebook').prepend(note)
-        fixLinks();
+        note.find('a').click(wikiLink);
     });
 }
 
-function fixLinks() {
-    $('a').click(function(event) {
-        var href_re = /^http:\/\//i;
-        var href = jQuery(this).attr('href');
-        console.log(href);
-        if (href_re.test(href)) {
-            // External link
-            console.log('External link');
-            event.target.target = '_blank';
-        } else {
-            // Internal link
-            console.log('Internal link');
-            event.preventDefault();
-            getItem(href);
-        }
-    });
+function wikiLink() {
+    var external_re = /^http:\/\//i;
+    var internal_re = /^\//;
+    var href = jQuery(this).attr('href');
+    console.log(href);
+    if (external_re.test(href)) {
+        // External link
+        console.log('External link');
+        event.target.target = '_blank';
+    } else if (internal_re.test(href)) {
+        // Internal link
+        console.log('Internal link');
+        event.preventDefault();
+        getItem(href);
+    } else {
+        // leave it alone...
+    }
 }
 
 $(document).ready(function() {
@@ -45,6 +46,8 @@ $(document).ready(function() {
 
     // Hide the starting template note.
     $('.note').hide();
+
+    $('#accordion ul a').click(wikiLink);
 
     getItem('/note/start');
 });
