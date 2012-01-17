@@ -12,6 +12,12 @@ function getItem(path) {
             note.find('.edit').show();
         });
 
+        note.find('.cancelbutton').click(function() {
+            note.find('.edit').hide();
+            note.find('.render').show();
+            fillNote(note, data);
+        });
+
         note.find('.donebutton').click(function() {
             note.find('.edit').hide();
             note.find('.render').show();
