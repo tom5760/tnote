@@ -17,7 +17,7 @@
     border-bottom: 1px solid black;
 }
 
-#toolbar ul, #toolbar li {
+#toolbar li {
     display: inline;
 }
 
@@ -27,54 +27,56 @@
     padding: 0 10px;
 }
 
-.note header, .note header p, .note header ul {
-    margin: 0;
-    padding: 0;
-}
-
-.note header p, .note header li {
-    display: inline;
-}
-
-.note header ul {
-    float: right;
-    font-size: small;
-}
-
-.note header li {
-    padding: 0 10px;
-}
-
-#notebook div.note {
+.note {
     border: 1px solid black;
     border-radius: 7px;
     margin: 10px 0;
 }
 
-#notebook article {
-    padding: 0 10px;
-}
-
-#notebook header {
+.note header {
     background-color: lightblue;
     border-radius: 7px 7px 0 0;
     padding: 4px;
     font-size: 1.25em;
 }
 
-#notebook footer {
+.note header ul {
+    margin: 0;
+    padding: 0;
+    float: right;
+    font-size: small;
+}
+
+.note header p, .note header li {
+    display: inline;
+}
+
+.note header li {
+    padding: 0 10px;
+}
+
+.note article {
+    padding: 0 10px;
+}
+
+.note footer {
     background-color: lightgrey;
     border-radius: 0 0 7px 7px;
     padding: 4px;
     font-size: .7em;
 }
 
-#notebook footer ul {
+.note footer ul {
     display: inline;
     list-style-type: none;
     padding: 0;
 }
 
-#notebook footer ul li {
+.note footer ul li {
     display: inline;
+}
+
+.edit textarea {
+    width: 90%;
+    height: 300px;
 }

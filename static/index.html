@@ -34,9 +34,30 @@
             <div id='notebook'>
                 <!-- This note block is cloned for each new note displayed. -->
                 <div class='note'>
-                    <header><p></p><ul><li><a href='#' class='closeothers'>Close Others</a></li><li><a href='#' class='close'>Close</a></li></ul></header>
-                    <article></article>
-                    <footer>Attachments: <ul></ul></footer>
+                    <div class='render'>
+                        <header><p></p>
+                            <ul>
+                                <li><a href='#' class='editbutton'>Edit</a></li>
+                                <li><a href='#' class='closeothersbutton'>Close Others</a></li>
+                                <li><a href='#' class='closebutton'>Close</a></li>
+                            </ul>
+                        </header>
+                        <article></article>
+                        <footer>Attachments: <ul></ul></footer>
+                    </div>
+                    <div class='edit'>
+                        <form action='/note/start' method='POST'>
+                            <header><p>Title: <input type='text' name='title' required/></p>
+                                <ul>
+                                    <li><a href='#' class='donebutton'>Done</a></li>
+                                    <li><a href='#' class='closeothersbutton'>Close Others</a></li>
+                                    <li><a href='#' class='closebutton'>Close</a></li>
+                                </ul>
+                            </header>
+                            <article><textarea name='body' wrap='hard'>foo</textarea></article>
+                            <footer>Attachments: <ul></ul></footer>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

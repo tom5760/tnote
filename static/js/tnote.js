@@ -3,27 +3,46 @@ function getItem(path) {
     $.getJSON(path, function(data) {
         console.log('Got note:', data);
         var note = $('.note:last').clone(true, true);
-        note.find('header > p').append(data.title);
-        note.find('article').append(data.content);
+
+        note.find('.render header > p').append(data.title);
+        note.find('.edit header input').val(data.title);
+
+        note.find('.render article').append(data.content);
+        note.find('.edit article textarea').val(data.content);
 
         if (data.attachments.length > 0) {
             $.each(data.attachments, function(i) {
-                note.find('footer ul').append(
+                note.find('.render footer ul').append(
                     '<li><a href=\'#\'>' + data.attachments[i].name
                     + '</a></li>');
             });
         } else {
-            note.find('footer').hide();
+            note.find('.render footer').hide();
         }
-        note.show();
-        $('#notebook').prepend(note)
-        note.find('article a').click(wikiLink);
-        note.find('.close').click(function() {
+
+        note.find('.render article a').click(wikiLink);
+
+        note.find('.editbutton').click(function() {
+            note.find('.render').hide();
+            note.find('.edit').show();
+        });
+
+        note.find('.donebutton').click(function() {
+            note.find('.edit').hide();
+            note.find('.render').show();
+        });
+
+        note.find('.closebutton').click(function() {
             note.remove();
         });
-        note.find('.closeothers').click(function() {
+
+        note.find('.closeothersbutton').click(function() {
             $('.note').not(':last').not(note).remove();
         });
+
+        note.show();
+        note.find('.edit').hide();
+        $('#notebook').prepend(note)
     });
 }
 
