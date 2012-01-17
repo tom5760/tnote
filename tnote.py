@@ -41,7 +41,7 @@ class TNote(object):
 class Notebook(object):
     def __init__(self, directory):
         self.directory = directory
-        self.source_dir = os.path.join(directory, 'src')
+        self.source_dir = os.path.join(directory, 'notes')
         self.static_dir = os.path.join(directory, 'static')
 
     def load_note(self, note):
