@@ -34,8 +34,13 @@ class TNote(object):
         if cherrypy.request.method == 'GET':
             title = name
             body = self.load_note(name)
+        elif cherrypy.request.method == 'POST':
+            if name == title:
+                self.save_note(name, body)
+            else:
+                self.rename_note(name, title, body)
         else:
-            self.save_note(name, body)
+            raise cherrypy.HTTPError(500, 'Unknown method')
 
         cherrypy.response.headers['Content-Type'] = 'application/json'
         return bytes(json.dumps({
@@ -58,6 +63,12 @@ class TNote(object):
         print('Saving file "{}"'.format(path))
         with open(path, 'w') as f:
             f.write(body)
+
+    def rename_note(self, oldname, newname, body):
+        oldpath = os.path.join(self.source_dir, oldname) + '.md'
+        newpath = os.path.join(self.source_dir, newname) + '.md'
+        os.rename(oldpath, newpath)
+        self.save_note(newname, body)
 
 def main(argv):
     if len(argv) > 2:
