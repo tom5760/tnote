@@ -2,12 +2,13 @@
     display: table;
     border: 1px solid black;
     margin: 0 auto;
-    width: 80%;
+    width: 90%;
 }
 
 #sidebar {
     display: table-cell;
     width: 15%;
+    min-width: 200px;
     border-right: 1px solid black;
 }
 
@@ -23,6 +24,10 @@
 
 #menu .ui-tabs-nav {
     font-size: small;
+}
+
+#menu .ui-tabs-nav li > * {
+    padding: 2px 4px;
 }
 
 #notebook {
