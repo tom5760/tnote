@@ -95,6 +95,19 @@ $(document).ready(function() {
     // Initialize the tabs widget in the sidebar.
     $('#menu').tabs();
 
+    $('#new-note-button').button({
+        icons: {primary: 'ui-icon-document'},
+        text: false,
+    });
+    $('#new-journal-button').button({
+        icons: {primary: 'ui-icon-calendar'},
+        text: false,
+    });
+    $('#options-button').button({
+        icons: {primary: 'ui-icon-wrench'},
+        text: false,
+    });
+
     $('#new-note-dialog').dialog({
         autoOpen: false,
         modal: true,

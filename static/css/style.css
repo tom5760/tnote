@@ -18,8 +18,8 @@
     border-bottom: 1px solid black;
 }
 
-#toolbar li {
-    display: inline;
+#toolbar .ui-button-text {
+    padding: 0;
 }
 
 #menu .ui-tabs-nav {
