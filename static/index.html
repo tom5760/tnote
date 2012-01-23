@@ -9,67 +9,59 @@
         <script src='static/js/tnote.js'></script>
     </head>
     <body>
-        <div id='main'>
-            <div id='sidebar'>
-                <div id='toolbar'>
-                    <button id='new-note-button'>New Note</button>
-                    <button id='new-journal-button'>New Journal</button>
-                    <button id='options-button'>Options</button>
-                </div>
-                <div id='menu'>
-                    <ul>
-                        <li><a href='#favorites'>Favorites</a></li>
-                        <li><a href='#tags'>Tags</a></li>
-                    </ul>
-                    <div id="favorites">
+        <div id='notebook'>
+            <!-- This note block is cloned for each new note displayed. -->
+            <div class='note'>
+                <div class='render'>
+                    <header><p></p>
                         <ul>
-                            <li><a href='/note/start'>Start</a></li>
-                            <li><a href='/note/to-do'>To-Do</a></li>
+                            <li><a href='#' class='editbutton'>Edit</a></li>
+                            <li><a href='#' class='closeothersbutton'>Close Others</a></li>
+                            <li><a href='#' class='closebutton'>Close</a></li>
                         </ul>
-                    </div>
-                    <div id="tags">
-                        <ul>
-                            <li><a href='/tag/work'>Work</a></li>
-                            <li><a href='/tag/play'>Play</a></li>
-                        </ul>
-                    </div>
+                    </header>
+                    <article></article>
+                    <footer>Attachments: <ul></ul></footer>
                 </div>
-            </div>
-            <div id='notebook'>
-                <!-- This note block is cloned for each new note displayed. -->
-                <div class='note'>
-                    <div class='render'>
-                        <header><p></p>
+                <div class='edit'>
+                    <form action='#' method='POST'>
+                        <header><p>Title: <input type='text' name='title' required/></p>
                             <ul>
-                                <li><a href='#' class='editbutton'>Edit</a></li>
+                                <li><a href='#' class='cancelbutton'>Cancel</a></li>
+                                <li><a href='#' class='donebutton'>Done</a></li>
                                 <li><a href='#' class='closeothersbutton'>Close Others</a></li>
                                 <li><a href='#' class='closebutton'>Close</a></li>
                             </ul>
                         </header>
-                        <article></article>
+                        <article><textarea name='body'>foo</textarea></article>
                         <footer>Attachments: <ul></ul></footer>
-                    </div>
-                    <div class='edit'>
-                        <form action='#' method='POST'>
-                            <header><p>Title: <input type='text' name='title' required/></p>
-                                <ul>
-                                    <li><a href='#' class='cancelbutton'>Cancel</a></li>
-                                    <li><a href='#' class='donebutton'>Done</a></li>
-                                    <li><a href='#' class='closeothersbutton'>Close Others</a></li>
-                                    <li><a href='#' class='closebutton'>Close</a></li>
-                                </ul>
-                            </header>
-                            <article><textarea name='body'>foo</textarea></article>
-                            <footer>Attachments: <ul></ul></footer>
-                        </form>
-                    </div>
+                    </form>
                 </div>
             </div>
-            <div id='new-note-dialog' title='Create a new note'>
-                <form>
-                    <label for='name'>Name</label>
-                    <input type='text' name='name'/>
-                </form>
+        </div>
+        <div id='sidebar'>
+            <div id='toolbar' class='ui-widget-header ui-corner-all'>
+                <button id='new-note-button'>New Note</button>
+                <button id='new-journal-button'>New Journal</button>
+                <button id='options-button'>Options</button>
+            </div>
+            <div id='menu'>
+                <ul>
+                    <li><a href='#favorites'>Favorites</a></li>
+                    <li><a href='#tags'>Tags</a></li>
+                </ul>
+                <div id="favorites">
+                    <ul>
+                        <li><a href='/note/start'>Start</a></li>
+                        <li><a href='/note/to-do'>To-Do</a></li>
+                    </ul>
+                </div>
+                <div id="tags">
+                    <ul>
+                        <li><a href='/tag/work'>Work</a></li>
+                        <li><a href='/tag/play'>Play</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </body>

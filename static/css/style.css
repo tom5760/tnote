@@ -1,39 +1,31 @@
-#main {
-    display: table;
-    border: 1px solid black;
-    margin: 0 auto;
-    width: 90%;
-}
-
 #sidebar {
-    display: table-cell;
-    width: 15%;
-    min-width: 200px;
-    border-right: 1px solid black;
+    position: fixed;
+    width: 195px;
+    top: 0;
+    left: 0;
+    padding: 5px;
 }
 
-#toolbar {
-    margin: 0;
-    padding: 0;
-    border-bottom: 1px solid black;
+#menu .ui-tabs-nav a {
+    padding: 2px;
+    font-size: small;
 }
 
 #toolbar .ui-button-text {
     padding: 0;
 }
 
-#menu .ui-tabs-nav {
-    font-size: small;
+#toolbar button {
+    margin: 0;
+    padding: 0;
 }
 
-#menu .ui-tabs-nav li > * {
-    padding: 2px 4px;
+#toolbar {
+    padding: 4px 10px;
 }
 
 #notebook {
-    display: table-cell;
-    width: 85%;
-    padding: 0 10px;
+    margin-left: 200px;
 }
 
 .note {
@@ -89,3 +81,24 @@
     width: 90%;
     height: 300px;
 }
+
+/*
+#toolbar .ui-button-text {
+    padding: 0;
+}
+
+#menu .ui-tabs-nav {
+    font-size: small;
+}
+
+#menu .ui-tabs-nav li > * {
+    padding: 2px 4px;
+}
+
+#notebook {
+    display: table-cell;
+    width: 85%;
+    padding: 0 10px;
+}
+
+*/

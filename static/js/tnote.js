@@ -108,26 +108,6 @@ $(document).ready(function() {
         text: false,
     });
 
-    $('#new-note-dialog').dialog({
-        autoOpen: false,
-        modal: true,
-        buttons: {
-            "Create Note": function() {
-                $(this).dialog("close");
-            },
-            "Cancel": function() {
-                $(this).dialog("close");
-            },
-        },
-        close: function() {
-            $(this).find('input').val('');
-        },
-    });
-
-    $('#new-note-button').click(function() {
-        $('#new-note-dialog').dialog("open");
-    });
-
     $('#menu div ul a').click(wikiLink);
 
     getItem('/note/start');
