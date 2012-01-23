@@ -56,6 +56,7 @@ Note.prototype = {
     },
     set title(title) {
         this._title = title;
+        this.note.attr('id', 'note-' + title);
         this.note.find('.note-edit form').attr('action', this.prefix + title);
         this.note.find('.note-display header > h1').empty().append(title);
         this.note.find('.note-edit header input').val(title);
