@@ -33,7 +33,10 @@ class TNote(object):
     def note(self, name, title=None, body=None):
         if cherrypy.request.method == 'GET':
             title = name
-            body = self.load_note(name)
+            try:
+                body = self.load_note(name)
+            except IOError:
+                raise cherrypy.HTTPError(404, 'Unknown note {}'.format(name))
         elif cherrypy.request.method == 'POST':
             if name == title:
                 self.save_note(name, body)
