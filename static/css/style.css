@@ -30,13 +30,11 @@
 
 .note {
     border: 1px solid black;
-    border-radius: 7px;
+    border-radius: 5px;
     margin: 10px 0;
 }
 
 .note header {
-    background-color: lightblue;
-    border-radius: 7px 7px 0 0;
     padding: 4px;
 }
 
@@ -61,7 +59,6 @@
 
 .note footer {
     background-color: lightgrey;
-    border-radius: 0 0 7px 7px;
     padding: 4px;
     font-size: .7em;
 }
