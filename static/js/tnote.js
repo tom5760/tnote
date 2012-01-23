@@ -3,39 +3,34 @@ function Note() {
     this.note = $('.note:last').clone(true, true);
 
     var that = this;
-    this.note.find('.edit-button').button().click(function() {
+    this.note.find('.edit-button').button().click(function(event) {
         event.preventDefault();
         that.showEdit();
     });
-    this.note.find('.done-button').button().click(function() {
+    this.note.find('.done-button').button().click(function(event) {
         event.preventDefault();
         that.note.find('.note-edit form').submit();
         that.showDisplay();
     });
-    this.note.find('.cancel-button').button().click(function() {
+    this.note.find('.cancel-button').button().click(function(event) {
         event.preventDefault();
         // Reset the form items
         that.title = that.title
         that.raw = that.raw
         that.showDisplay();
     });
-    this.note.find('.close-others-button').button().click(function() {
+    this.note.find('.close-others-button').button().click(function(event) {
         event.preventDefault();
         $('.note').not(':last').not(that.note).remove();
     });
-    this.note.find('.close-button').button().click(function() {
+    this.note.find('.close-button').button().click(function(event) {
         event.preventDefault();
         that.close();
     });
 
-    this.note.find('.note-edit form').submit(function() {
-        console.log('Submitting...');
-        var form = $(this);
-        $.post(form.attr('action'), form.serialize(), function(data) {
-            console.log('Done!');
-            $.extend(that, data);
-        });
-        return false;
+    this.note.find('.note-edit form').submit(function(event) {
+        event.preventDefault();
+        that.save();
     });
 
     this.note.find('.note-display article').on('click', 'a', wikiLink);
@@ -100,6 +95,23 @@ Note.prototype = {
         return this;
     },
 
+    save: function() {
+        var form = this.note.find('.note-edit form');
+
+        console.log('Submitting...');
+        $.ajax({
+            context: this,
+            type: 'POST',
+            url: form.attr('action'),
+            data: form.serialize(),
+            success: function(data) {
+                console.log('Done!');
+                $.extend(this, data);
+            },
+        });
+        return this;
+    },
+
     open: function() {
         this.showDisplay();
         $('#notebook').prepend(this.note);
@@ -136,7 +148,7 @@ function wikiLink(event) {
     } else if (internal_re.test(href)) {
         // Internal link
         event.preventDefault();
-        new Note().load(href).open();
+        new Note().load(href).open().showDisplay();
     } else {
         // leave it alone...
     }
@@ -153,7 +165,10 @@ $(document).ready(function() {
     $('#new-note-button').button({
         icons: {primary: 'ui-icon-document'},
         text: false,
+    }).click(function(event) {
+        new Note().open().showEdit();
     });
+
     $('#new-journal-button').button({
         icons: {primary: 'ui-icon-calendar'},
         text: false,
@@ -166,5 +181,5 @@ $(document).ready(function() {
     $('#menu div ul a').click(wikiLink);
 
     //getItem('/note/start');
-    new Note().load('/note/start').open();
+    new Note().load('/note/start').open().showDisplay();
 });
