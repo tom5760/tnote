@@ -1,88 +1,142 @@
-function getItem(path) {
-    console.log('Requesting:', path);
-    $.getJSON(path, function(data) {
-        console.log('Got note:', data);
-        var note = $('.note:last').clone(true, true);
+function Note() {
+    // By convention, the last note div is hidden and cloned for new notes.
+    this.note = $('.note:last').clone(true, true);
 
-        fillNote(note, data);
-
-        note.find('.render article a').click(wikiLink);
-        note.find('.editbutton').click(function() {
-            note.find('.render').hide();
-            note.find('.edit').show();
-        });
-
-        note.find('.cancelbutton').click(function() {
-            note.find('.edit').hide();
-            note.find('.render').show();
-            fillNote(note, data);
-        });
-
-        note.find('.donebutton').click(function() {
-            note.find('.edit').hide();
-            note.find('.render').show();
-            note.find('.edit form').submit();
-        });
-
-        note.find('.closebutton').click(function() {
-            note.remove();
-        });
-
-        note.find('.closeothersbutton').click(function() {
-            $('.note').not(':last').not(note).remove();
-        });
-
-        note.find('.edit form').attr('action', '/note/' + data.title);
-        note.find('.edit form').submit(function() {
-            console.log('Submitting...');
-            var form = jQuery(this);
-            $.post(form.attr('action'), form.serialize(), function(data) {
-                console.log('Done!');
-                fillNote(note, data);
-            });
-            return false;
-        });
-
-        note.show();
-        note.find('.edit').hide();
-        $('#notebook').prepend(note)
+    var that = this;
+    this.note.find('.edit-button').button().click(function() {
+        event.preventDefault();
+        that.showEdit();
     });
-}
+    this.note.find('.done-button').button().click(function() {
+        event.preventDefault();
+        that.note.find('.note-edit form').submit();
+        that.showDisplay();
+    });
+    this.note.find('.cancel-button').button().click(function() {
+        event.preventDefault();
+        // Reset the form items
+        that.title = that.title
+        that.raw = that.raw
+        that.showDisplay();
+    });
+    this.note.find('.close-others-button').button().click(function() {
+        event.preventDefault();
+        $('.note').not(':last').not(that.note).remove();
+    });
+    this.note.find('.close-button').button().click(function() {
+        event.preventDefault();
+        that.close();
+    });
 
-function fillNote(note, data) {
-    note.find('.render header > p').empty().append(data.title);
-    note.find('.edit header input').val(data.title);
-
-    note.find('.render article').empty().append(data.html);
-    note.find('.edit article textarea').val(data.raw);
-
-    if (data.attachments.length > 0) {
-        note.find('.render footer ul').empty();
-        $.each(data.attachments, function(i) {
-            note.find('.render footer ul').append(
-                '<li><a href=\'#\'>' + data.attachments[i].name
-                + '</a></li>');
+    this.note.find('.note-edit form').submit(function() {
+        console.log('Submitting...');
+        var form = $(this);
+        $.post(form.attr('action'), form.serialize(), function(data) {
+            console.log('Done!');
+            $.extend(that, data);
         });
-    } else {
-        note.find('.render footer').hide();
-    }
+        return false;
+    });
 
+    this.note.find('.note-display article').on('click', 'a', wikiLink);
 }
 
-function wikiLink() {
+Note.prototype = {
+    _title: null,
+    get title() {
+        return this._title;
+    },
+    set title(title) {
+        this._title = title;
+        this.note.find('.note-edit form').attr('action', '/note/' + title);
+        this.note.find('.note-display header > h1').empty().append(title);
+        this.note.find('.note-edit header input').val(title);
+    },
+
+    _html: null,
+    get html() {
+        return this._html;
+    },
+    set html(html) {
+        this._html = html;
+        this.note.find('.note-display article').empty().append(html);
+    },
+
+    _raw: null,
+    get raw() {
+        return this._raw;
+    },
+    set raw(raw) {
+        this._raw = raw;
+        this.note.find('.note-edit article textarea').val(raw);
+    },
+
+    _attachments: null,
+    get attachments() {
+        return this._attachments;
+    },
+    set attachments(attachments) {
+        this._attachments = attachments;
+        this.note.find('.note-display footer ul').empty();
+
+        var that = this;
+        $.each(attachments, function(i) {
+            that.note.find('.note-display footer ul').append(
+                '<li><a href="#">' + attachments[i].name + '</a></li>');
+        });
+    },
+
+    note: null,
+
+    load: function(path) {
+        $.ajax({
+            url: path,
+            dataType: 'json',
+            context: this,
+            success: function(data) {
+                $.extend(this, data);
+            },
+        });
+        return this;
+    },
+
+    open: function() {
+        this.showDisplay();
+        $('#notebook').prepend(this.note);
+        return this;
+    },
+
+    close: function() {
+        this.note.remove();
+        return this;
+    },
+
+    showEdit: function() {
+        this.note.show();
+        this.note.find('.note-display').hide();
+        this.note.find('.note-edit').show();
+        return this;
+    },
+
+    showDisplay: function() {
+        this.note.show();
+        this.note.find('.note-edit').hide();
+        this.note.find('.note-display').show();
+        return this;
+    },
+}
+
+function wikiLink(event) {
     var external_re = /^http:\/\//i;
     var internal_re = /^\//;
-    var href = jQuery(this).attr('href');
-    console.log(href);
+    var href = $(this).attr('href');
     if (external_re.test(href)) {
         // External link
-        console.log('External link');
         event.target.target = '_blank';
     } else if (internal_re.test(href)) {
         // Internal link
-        console.log('Internal link');
         event.preventDefault();
-        getItem(href);
+        new Note().load(href).open();
     } else {
         // leave it alone...
     }
@@ -95,6 +149,7 @@ $(document).ready(function() {
     // Initialize the tabs widget in the sidebar.
     $('#menu').tabs();
 
+    // Initialize the toolbar buttons
     $('#new-note-button').button({
         icons: {primary: 'ui-icon-document'},
         text: false,
@@ -110,5 +165,6 @@ $(document).ready(function() {
 
     $('#menu div ul a').click(wikiLink);
 
-    getItem('/note/start');
+    //getItem('/note/start');
+    new Note().load('/note/start').open();
 });

@@ -38,22 +38,21 @@
     background-color: lightblue;
     border-radius: 7px 7px 0 0;
     padding: 4px;
-    font-size: 1.25em;
 }
 
-.note header ul {
+.note header h1 {
+    margin: 0;
+    font-size: x-large;
+}
+
+.note header span {
+    float: right;
+}
+
+.note header button {
     margin: 0;
     padding: 0;
-    float: right;
-    font-size: small;
-}
-
-.note header p, .note header li {
-    display: inline;
-}
-
-.note header li {
-    padding: 0 10px;
+    font-size: xx-small;
 }
 
 .note article {
@@ -77,28 +76,11 @@
     display: inline;
 }
 
-.edit textarea {
+.note-edit header p {
+    margin: 0;
+}
+
+.note-edit textarea {
     width: 90%;
     height: 300px;
 }
-
-/*
-#toolbar .ui-button-text {
-    padding: 0;
-}
-
-#menu .ui-tabs-nav {
-    font-size: small;
-}
-
-#menu .ui-tabs-nav li > * {
-    padding: 2px 4px;
-}
-
-#notebook {
-    display: table-cell;
-    width: 85%;
-    padding: 0 10px;
-}
-
-*/
