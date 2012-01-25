@@ -206,7 +206,18 @@ $(document).ready(function() {
     $('#new-journal-button').button({
         icons: {primary: 'ui-icon-calendar'},
         text: false,
+    }).click(function(event) {
+        var note = new Note();
+        var date = new Date();
+        var month = date.getMonth() + 1;
+        if (month < 10) {
+            month = "0" + month;
+        }
+        note.title = date.getFullYear() + '-' + month + '-'
+                     + date.getDate();
+        note.open().showEdit();
     });
+
     $('#options-button').button({
         icons: {primary: 'ui-icon-wrench'},
         text: false,
