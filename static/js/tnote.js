@@ -225,6 +225,5 @@ $(document).ready(function() {
 
     $('#menu div ul a').click(wikiLink);
 
-    //getItem('/note/start');
-    new Note().open().showDisplay().load('start');
+    new Note().open().showDisplay().load('Start');
 });
