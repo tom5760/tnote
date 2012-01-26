@@ -12,7 +12,6 @@ function Note() {
     this.note.find('.done-button').button().click(function(event) {
         event.preventDefault();
         that.note.find('.note-edit form').submit();
-        that.showDisplay();
     });
 
     this.note.find('.cancel-button').button().click(function(event) {
@@ -45,6 +44,8 @@ function Note() {
     });
 
     this.note.find('.note-display article').on('click', 'a', wikiLink);
+
+    this.clearError();
 }
 
 Note.prototype = {
@@ -71,7 +72,7 @@ Note.prototype = {
         this.note.find('.note-display article').empty().append(html);
     },
 
-    _raw: null,
+    _raw: "This page does not exist.",
     get raw() {
         return this._raw;
     },
@@ -109,7 +110,6 @@ Note.prototype = {
             error: function(request) {
                 if (request.status == 404) {
                     this.title = name;
-                    this.raw = "This page does not exist.";
                     this.showEdit();
                 } else {
                     console.log('Unknown loading error:', request.status);
@@ -121,11 +121,20 @@ Note.prototype = {
 
     save: function() {
         var form = this.note.find('.note-edit form');
+        var title = this.note.find('.note-edit header input').val();
+
+        this.clearError();
+
+        if (title.length == 0) {
+            console.log('Invalid title!');
+            this.addError('Invalid title');
+            return;
+        }
 
         var action = form.attr('action');
         if (action == '#') {
-            action = this.prefix + this.note.find('.note-edit header input')
-                .val();
+            action = this.prefix
+                     + this.note.find('.note-edit header input').val();
         }
 
         $.ajax({
@@ -135,6 +144,11 @@ Note.prototype = {
             data: form.serialize(),
             success: function(data) {
                 $.extend(this, data);
+                this.clearError();
+                this.showDisplay();
+            },
+            error: function(request) {
+                this.addError('Save failed!  Error:' + request.status);
             },
         });
         return this;
@@ -163,6 +177,17 @@ Note.prototype = {
         this.note.find('.note-edit').hide();
         this.note.find('.note-display').show();
         return this;
+    },
+
+    addError: function(message) {
+        this.note.find('.note-edit .ui-state-error ul')
+            .append('<li>' + message + '</li>');
+        this.note.find('.note-edit .ui-state-error').slideDown();
+    },
+
+    clearError: function() {
+        this.note.find('.note-edit .ui-state-error ul').empty();
+        this.note.find('.note-edit .ui-state-error').hide();
     },
 }
 
