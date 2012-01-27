@@ -87,12 +87,17 @@ Note.prototype = {
     },
     set attachments(attachments) {
         this._attachments = attachments;
-        var list = this.note.find('.note-display footer .attachments ul')
-                   .empty();
-        $.each(attachments, function(i) {
-            list.append('<li><a href="#">' + attachments[i].name
-                        + '</a></li>');
-        });
+        var span = this.note.find('.note-display footer .attachments');
+        var list = span.find('ul').empty();
+        if (attachments.length > 0) {
+            span.show();
+            $.each(attachments, function(i) {
+                list.append('<li><a href="#">' + attachments[i].name
+                            + '</a></li>');
+            });
+        } else {
+            span.hide();
+        }
     },
 
     _tags: null,
@@ -101,14 +106,22 @@ Note.prototype = {
     },
     set tags(tags) {
         this._tags = tags;
-        var list = this.note.find('.note-display footer .tags ul').empty();
+        var span = this.note.find('.note-display footer .tags');
+        var list = span.find('ul').empty();
         var input = this.note.find('.note-edit footer .tags input')
                     .val(tags.join(', '));
-        $.each(tags, function(i) {
-            list.append('<li><a href="#">' + tags[i] + '</a></li>');
-        });
+
         // Refresh the tags tab on the sidebar
         $('#menu').tabs('load', 1);
+
+        if (tags.length > 0) {
+            span.show();
+            $.each(tags, function(i) {
+                list.append('<li><a href="#">' + tags[i] + '</a></li>');
+            });
+        } else {
+            span.hide();
+        }
     },
 
     note: null,

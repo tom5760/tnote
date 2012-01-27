@@ -71,12 +71,9 @@
     padding: 0;
 }
 
-.note footer ul li {
+.note footer li {
     display: inline;
-}
-
-.note footer .tags {
-    float: right;
+    padding: 0 3px;
 }
 
 .note-edit header p {
