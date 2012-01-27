@@ -14,6 +14,8 @@ import sys
 import cherrypy
 import misaka
 
+import git
+
 class TNote(object):
     def __init__(self, directory):
         super().__init__()
@@ -22,11 +24,15 @@ class TNote(object):
         self.note_dir = os.path.join(directory, 'notes')
         self.static_dir = os.path.join(self.script_dir, 'static')
 
+        self.repository = git.Repository(self.directory)
+
         if not os.path.isdir(self.note_dir):
             print('Note directory doesn\'t exist, creating...')
             os.mkdir(self.note_dir)
             shutil.copy(os.path.join(self.script_dir, 'notes', 'Start.md'),
                         self.note_dir)
+            self.repository.add(self.note_dir)
+            self.repository.commit('Initial commit.')
 
     @cherrypy.expose
     def index(self):
@@ -74,11 +80,15 @@ class TNote(object):
         print('Saving file "{}"'.format(path))
         with open(path, 'w') as f:
             f.write(body)
+        self.repository.add(path)
+        self.repository.commit('Edited note "{}"'.format(note))
 
     def rename_note(self, oldname, newname, body):
         oldpath = os.path.join(self.note_dir, oldname) + '.md'
         newpath = os.path.join(self.note_dir, newname) + '.md'
-        os.rename(oldpath, newpath)
+        self.repository.mv(oldpath, newpath)
+        self.repository.commit('Renamed note "{}" to "{}"'
+                .format(oldname, newname))
         self.save_note(newname, body)
 
 def main(argv):
