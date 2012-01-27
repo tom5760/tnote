@@ -100,8 +100,11 @@ class TNote(object):
         if self.repository.dirty():
             self.repository.add(path)
             self.repository.commit('Edited note "{}"'.format(note))
-        self.set_tags(note, list(set(map(lambda x: x.strip(),
-                                         tags.split(',')))))
+
+        tags = list(map(lambda x: x.strip(), tags.split(',')))
+        if len(tags) == 1 and tags[0] == '':
+            tags = []
+        self.set_tags(note, tags)
 
     def rename_note(self, oldname, newname, body):
         oldpath = os.path.join(self.note_dir, oldname) + '.md'
