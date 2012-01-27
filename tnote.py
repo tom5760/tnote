@@ -8,6 +8,7 @@
 import json
 import os
 import os.path
+import shutil
 import sys
 
 import cherrypy
@@ -17,8 +18,15 @@ class TNote(object):
     def __init__(self, directory):
         super().__init__()
         self.directory = directory
-        self.source_dir = os.path.join(directory, 'notes')
-        self.static_dir = os.path.join(directory, 'static')
+        self.script_dir = os.path.split(__file__)[0]
+        self.note_dir = os.path.join(directory, 'notes')
+        self.static_dir = os.path.join(self.script_dir, 'static')
+
+        if not os.path.isdir(self.note_dir):
+            print('Note directory doesn\'t exist, creating...')
+            os.mkdir(self.note_dir)
+            shutil.copy(os.path.join(self.script_dir, 'notes', 'Start.md'),
+                        self.note_dir)
 
     @cherrypy.expose
     def index(self):
@@ -56,20 +64,20 @@ class TNote(object):
         }), 'utf-8')
 
     def load_note(self, note):
-        path = os.path.join(self.source_dir, note) + '.md'
+        path = os.path.join(self.note_dir, note) + '.md'
         print('Loading file "{}"'.format(path))
         with open(path) as f:
             return f.read(None)
 
     def save_note(self, note, body):
-        path = os.path.join(self.source_dir, note) + '.md'
+        path = os.path.join(self.note_dir, note) + '.md'
         print('Saving file "{}"'.format(path))
         with open(path, 'w') as f:
             f.write(body)
 
     def rename_note(self, oldname, newname, body):
-        oldpath = os.path.join(self.source_dir, oldname) + '.md'
-        newpath = os.path.join(self.source_dir, newname) + '.md'
+        oldpath = os.path.join(self.note_dir, oldname) + '.md'
+        newpath = os.path.join(self.note_dir, newname) + '.md'
         os.rename(oldpath, newpath)
         self.save_note(newname, body)
 
