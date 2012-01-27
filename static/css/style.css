@@ -75,6 +75,10 @@
     display: inline;
 }
 
+.note footer .tags {
+    float: right;
+}
+
 .note-edit header p {
     margin: 0;
 }

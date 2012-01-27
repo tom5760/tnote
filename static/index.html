@@ -22,7 +22,10 @@
                         <h1></h1>
                     </header>
                     <article></article>
-                    <footer>Attachments: <ul></ul></footer>
+                    <footer>
+                        <span class='attachments'>Attachments: <ul></ul></span>
+                        <span class='tags'>Tags: <ul></ul></span>
+                    </footer>
                 </div>
                 <div class='note-edit'>
                     <form action='#' method='POST'>
@@ -37,7 +40,10 @@
                         </header>
                         <div class='ui-state-error'><ul></ul></div>
                         <article><textarea name='body'></textarea></article>
-                        <footer>Attachments: <ul></ul></footer>
+                        <footer>
+                            <span class='attachments'>Attachments: <ul></ul></span>
+                            <span class='tags'>Tags: <input type='text' name='tags'/></span>
+                        </footer>
                     </form>
                 </div>
             </div>
@@ -51,19 +57,11 @@
             <div id='menu'>
                 <ul>
                     <li><a href='#favorites'>Favorites</a></li>
-                    <li><a href='#tags'>Tags</a></li>
+                    <li><a href='/tag'>Tags</a></li>
                 </ul>
                 <div id="favorites">
-                    <ul>
-                        <li><a href='/note/start'>Start</a></li>
-                        <li><a href='/note/to-do'>To-Do</a></li>
-                    </ul>
                 </div>
                 <div id="tags">
-                    <ul>
-                        <li><a href='/tag/work'>Work</a></li>
-                        <li><a href='/tag/play'>Play</a></li>
-                    </ul>
                 </div>
             </div>
         </div>

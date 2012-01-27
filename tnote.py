@@ -17,12 +17,17 @@ import misaka
 import git
 
 class TNote(object):
+    markdown_extensions = (misaka.EXT_AUTOLINK
+                          | misaka.EXT_FENCED_CODE
+                          | misaka.EXT_TABLES)
+
     def __init__(self, directory):
         super().__init__()
         self.directory = directory
         self.script_dir = os.path.split(__file__)[0]
         self.note_dir = os.path.join(directory, 'notes')
         self.static_dir = os.path.join(self.script_dir, 'static')
+        self.tag_file = os.path.join(directory, 'tags.json')
 
         self.repository = git.Repository(self.directory)
 
@@ -34,6 +39,8 @@ class TNote(object):
             self.repository.add(self.note_dir)
             self.repository.commit('Initial commit.')
 
+        self.load_tags()
+
     @cherrypy.expose
     def index(self):
         return self.static('index.html')
@@ -44,7 +51,7 @@ class TNote(object):
         return cherrypy.lib.static.serve_file(path)
 
     @cherrypy.expose
-    def note(self, name, title=None, body=None):
+    def note(self, name, title=None, body=None, tags=None):
         if cherrypy.request.method == 'GET':
             title = name
             try:
@@ -52,10 +59,9 @@ class TNote(object):
             except IOError:
                 raise cherrypy.HTTPError(404, 'Unknown note {}'.format(name))
         elif cherrypy.request.method == 'POST':
-            if name == title:
-                self.save_note(name, body)
-            else:
-                self.rename_note(name, title, body)
+            if name != title:
+                self.rename_note(name, title)
+            self.save_note(title, body, tags)
         else:
             raise cherrypy.HTTPError(500, 'Unknown method')
 
@@ -63,11 +69,22 @@ class TNote(object):
         return bytes(json.dumps({
             'title': title,
             'raw': body,
-            'html': misaka.html(body),
-            'attachments': [
-                {'name': 'foo.pdf'},
-            ],
+            'html': misaka.html(body, self.markdown_extensions),
+            'attachments': [],
+            'tags': self.get_tags(title),
         }), 'utf-8')
+
+    @cherrypy.expose
+    def tag(self, tag_name=None):
+        if tag_name == None:
+            html = ['<ul>']
+            for t in sorted(self.get_tags()):
+                print('Tag:', t)
+                html.append('<li><a href="/tags/{0}">{0}</a></li>'.format(t))
+            html.append('</ul>')
+            return bytes(''.join(html), 'utf-8')
+        else:
+            raise cherrypy.HTTPError(404, 'Unknown method')
 
     def load_note(self, note):
         path = os.path.join(self.note_dir, note) + '.md'
@@ -75,13 +92,16 @@ class TNote(object):
         with open(path) as f:
             return f.read(None)
 
-    def save_note(self, note, body):
+    def save_note(self, note, body, tags):
         path = os.path.join(self.note_dir, note) + '.md'
         print('Saving file "{}"'.format(path))
         with open(path, 'w') as f:
             f.write(body)
-        self.repository.add(path)
-        self.repository.commit('Edited note "{}"'.format(note))
+        if self.repository.dirty():
+            self.repository.add(path)
+            self.repository.commit('Edited note "{}"'.format(note))
+        self.set_tags(note, list(set(map(lambda x: x.strip(),
+                                         tags.split(',')))))
 
     def rename_note(self, oldname, newname, body):
         oldpath = os.path.join(self.note_dir, oldname) + '.md'
@@ -89,7 +109,44 @@ class TNote(object):
         self.repository.mv(oldpath, newpath)
         self.repository.commit('Renamed note "{}" to "{}"'
                 .format(oldname, newname))
-        self.save_note(newname, body)
+        self.rename_note_tags(oldname, newname)
+
+    def load_tags(self):
+        try:
+            with open(self.tag_file) as f:
+                self.tags = json.load(f)
+        except IOError:
+            self.tags = {}
+
+    def save_tags(self):
+        with open(self.tag_file, 'w') as f:
+            json.dump(self.tags, f)
+        if self.repository.dirty():
+            self.repository.add(self.tag_file)
+            self.repository.commit('Updated tags')
+
+    def get_tags(self, note=None):
+        if note is not None:
+            try:
+                return self.tags[note]
+            except KeyError:
+                return []
+
+        tags = set()
+        for t in self.tags.values():
+            tags.update(t)
+        return list(tags)
+
+    def set_tags(self, note, tags=None):
+        if tags is None:
+            tags = []
+        self.tags[note] = tags
+        self.save_tags()
+
+    def rename_note_tags(self, oldname, newname):
+        tags = self.tags.pop(oldname, [])
+        self.tags[newname] = tags
+        self.save_tags()
 
 def main(argv):
     if len(argv) > 2:

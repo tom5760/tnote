@@ -87,13 +87,28 @@ Note.prototype = {
     },
     set attachments(attachments) {
         this._attachments = attachments;
-        this.note.find('.note-display footer ul').empty();
-
-        var that = this;
+        var list = this.note.find('.note-display footer .attachments ul')
+                   .empty();
         $.each(attachments, function(i) {
-            that.note.find('.note-display footer ul').append(
-                '<li><a href="#">' + attachments[i].name + '</a></li>');
+            list.append('<li><a href="#">' + attachments[i].name
+                        + '</a></li>');
         });
+    },
+
+    _tags: null,
+    get tags() {
+        return this._tags;
+    },
+    set tags(tags) {
+        this._tags = tags;
+        var list = this.note.find('.note-display footer .tags ul').empty();
+        var input = this.note.find('.note-edit footer .tags input')
+                    .val(tags.join(', '));
+        $.each(tags, function(i) {
+            list.append('<li><a href="#">' + tags[i] + '</a></li>');
+        });
+        // Refresh the tags tab on the sidebar
+        $('#menu').tabs('load', 1);
     },
 
     note: null,
@@ -218,7 +233,13 @@ $(document).ready(function() {
     $('.note').hide();
 
     // Initialize the tabs widget in the sidebar.
-    $('#menu').tabs();
+    $('#menu').tabs({
+        ajaxOptions: {
+            error: function(xhr, status, index, anchor) {
+                $(anchor.hash).html('Error.');
+            },
+        },
+    });
 
     // Initialize the toolbar buttons
     $('#new-note-button').button({
