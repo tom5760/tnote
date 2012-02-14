@@ -1,6 +1,6 @@
 function Note() {
     // By convention, the last note div is hidden and cloned for new notes.
-    this.note = $('.note:last').clone(true, true);
+    this.note = $(this.template);
 
     var that = this;
 
@@ -50,6 +50,43 @@ function Note() {
 
 Note.prototype = {
     prefix: '/note/',
+
+    template: "<div class='note'>"
+            + "<div class='note-display'>"
+                + "<header class='ui-widget-header'>"
+                    + "<span>"
+                        + "<button class='edit-button'>Edit</button>"
+                        + "<button class='close-others-button'>Close Others</button>"
+                        + "<button class='close-button'>Close</button>"
+                    + "</span>"
+                    + "<h1></h1>"
+                + "</header>"
+                + "<article></article>"
+                + "<footer>"
+                    + "<span class='attachments'>Attachments: <ul></ul></span>"
+                    + "<span class='tags'>Tags: <ul></ul></span>"
+                + "</footer>"
+            + "</div>"
+            + "<div class='note-edit'>"
+                + "<form action='#' method='POST'>"
+                    + "<header class='ui-widget-header'>"
+                        + "<span>"
+                            + "<button class='done-button'>Done</button>"
+                            + "<button class='cancel-button'>Cancel</button>"
+                            + "<button class='close-others-button'>Close Others</button>"
+                            + "<button class='close-button'>Close</button>"
+                        + "</span>"
+                        + "<p>Title: <input type='text' name='title' required/></p>"
+                    + "</header>"
+                    + "<div class='ui-state-error'><ul></ul></div>"
+                    + "<article><textarea name='body'></textarea></article>"
+                    + "<footer>"
+                        + "<span class='attachments'>Attachments: <ul></ul></span>"
+                        + "<span class='tags'>Tags: <input type='text' name='tags'/></span>"
+                    + "</footer>"
+                + "</form>"
+            + "</div>"
+        + "</div>",
 
     _title: null,
     get title() {

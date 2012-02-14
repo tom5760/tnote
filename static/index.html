@@ -9,45 +9,7 @@
         <script src='static/js/tnote.js'></script>
     </head>
     <body>
-        <div id='notebook'>
-            <!-- This note block is cloned for each new note displayed. -->
-            <div class='note'>
-                <div class='note-display'>
-                    <header class='ui-widget-header'>
-                        <span>
-                            <button class='edit-button'>Edit</button>
-                            <button class='close-others-button'>Close Others</button>
-                            <button class='close-button'>Close</button>
-                        </span>
-                        <h1></h1>
-                    </header>
-                    <article></article>
-                    <footer>
-                        <span class='attachments'>Attachments: <ul></ul></span>
-                        <span class='tags'>Tags: <ul></ul></span>
-                    </footer>
-                </div>
-                <div class='note-edit'>
-                    <form action='#' method='POST'>
-                        <header class='ui-widget-header'>
-                            <span>
-                                <button class='done-button'>Done</button>
-                                <button class='cancel-button'>Cancel</button>
-                                <button class='close-others-button'>Close Others</button>
-                                <button class='close-button'>Close</button>
-                            </span>
-                            <p>Title: <input type='text' name='title' required/></p>
-                        </header>
-                        <div class='ui-state-error'><ul></ul></div>
-                        <article><textarea name='body'></textarea></article>
-                        <footer>
-                            <span class='attachments'>Attachments: <ul></ul></span>
-                            <span class='tags'>Tags: <input type='text' name='tags'/></span>
-                        </footer>
-                    </form>
-                </div>
-            </div>
-        </div>
+        <div id='notebook'></div>
         <div id='sidebar'>
             <div id='toolbar' class='ui-widget-header ui-corner-all'>
                 <button id='new-note-button'>New Note</button>
