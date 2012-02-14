@@ -43,8 +43,6 @@ function Note() {
         that.save();
     });
 
-    this.note.find('.note-display article').on('click', 'a', wikiLink);
-
     this.clearError();
 }
 
@@ -319,7 +317,7 @@ $(document).ready(function() {
         text: false,
     });
 
-    $('#menu div ul a').click(wikiLink);
+    $('body').on('click', 'a', wikiLink);
 
     new Note().open().showDisplay().load('Start');
 });
