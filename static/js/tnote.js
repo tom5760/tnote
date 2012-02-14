@@ -275,7 +275,6 @@ TagNote.prototype = Object.create(new Note(), {
 
     title: {
         set: function(title) {
-            console.log(title);
             this._title = title;
             this.note.attr('id', 'tag-' + title);
             this.note.find('.note-display header > h1').empty().append('Tag: ' + title);
@@ -295,12 +294,19 @@ function wikiLink(event) {
     } else if (internal_re.test(href)) {
         // Internal link
         event.preventDefault();
+        //event.target.href = 'http://google.com';
         if (note_re.test(href)) {
             var name = note_re.exec(href)[1];
-            new Note().open().showDisplay().load(name);
+            if ($('#note-' + name).length == 0) {
+                new Note().open().showDisplay().load(name);
+            }
+            location.href = '#note-' + name;
         } else if (tag_re.test(href)) {
             var name = tag_re.exec(href)[1];
-            new TagNote().open().showDisplay().load(name);
+            if ($('#tag-' + name).length == 0) {
+                new TagNote().open().showDisplay().load(name);
+            }
+            location.href = '#tag-' + name;
         } else {
             console.log('Unknown internal link href:', href);
         }
