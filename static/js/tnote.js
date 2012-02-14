@@ -252,12 +252,42 @@ Note.prototype = {
         this.note.find('.note-edit .ui-state-error ul').empty();
         this.note.find('.note-edit .ui-state-error').hide();
     },
+};
+
+function TagNote() {
+    Note.call(this);
 }
+TagNote.prototype = Object.create(new Note(), {
+    prefix: { value: '/tag/', writeable: true },
+
+    template: { writable: true, value: "<div class='note'>"
+            + "<div class='note-display'>"
+                + "<header class='ui-widget-header'>"
+                    + "<span>"
+                        + "<button class='close-others-button'>Close Others</button>"
+                        + "<button class='close-button'>Close</button>"
+                    + "</span>"
+                    + "<h1></h1>"
+                + "</header>"
+                + "<article></article>"
+            + "</div>"
+        + "</div>" },
+
+    title: {
+        set: function(title) {
+            console.log(title);
+            this._title = title;
+            this.note.attr('id', 'tag-' + title);
+            this.note.find('.note-display header > h1').empty().append('Tag: ' + title);
+        },
+    },
+});
 
 function wikiLink(event) {
     var external_re = /^http:\/\//i;
     var internal_re = /^\//;
     var note_re = /^\/note\/(.*)/;
+    var tag_re = /^\/tag\/(.*)/;
     var href = $(this).attr('href');
     if (external_re.test(href)) {
         // External link
@@ -268,6 +298,9 @@ function wikiLink(event) {
         if (note_re.test(href)) {
             var name = note_re.exec(href)[1];
             new Note().open().showDisplay().load(name);
+        } else if (tag_re.test(href)) {
+            var name = tag_re.exec(href)[1];
+            new TagNote().open().showDisplay().load(name);
         } else {
             console.log('Unknown internal link href:', href);
         }

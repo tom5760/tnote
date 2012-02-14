@@ -80,11 +80,19 @@ class TNote(object):
             html = ['<ul>']
             for t in sorted(self.get_tags()):
                 print('Tag:', t)
-                html.append('<li><a href="/tags/{0}">{0}</a></li>'.format(t))
+                html.append('<li><a href="/tag/{0}">{0}</a></li>'.format(t))
             html.append('</ul>')
             return bytes(''.join(html), 'utf-8')
         else:
-            raise cherrypy.HTTPError(404, 'Unknown method')
+            html = ['<ul>']
+            for n in sorted(self.get_notes(tag_name)):
+                print('Note:', n)
+                html.append('<li><a href="/note/{0}">{0}</a></li>'.format(n))
+            html.append('</ul>')
+            return bytes(json.dumps({
+                'title': tag_name,
+                'html': ''.join(html)
+            }), 'utf-8')
 
     def load_note(self, note):
         path = os.path.join(self.note_dir, note) + '.md'
@@ -127,6 +135,13 @@ class TNote(object):
         if self.repository.dirty():
             self.repository.add(self.tag_file)
             self.repository.commit('Updated tags')
+
+    def get_notes(self, tag_name):
+        rv = []
+        for note, tags in self.tags.items():
+            if tag_name in tags:
+                rv.append(note)
+        return rv
 
     def get_tags(self, note=None):
         if note is not None:
