@@ -28,59 +28,59 @@
     margin-left: 200px;
 }
 
-.note {
+.tnote {
     border: 1px solid black;
     border-radius: 7px;
     margin: 10px 0;
 }
 
-.note header {
+.tnote header {
     border-radius: 7px 7px 0 0;
     padding: 4px;
 }
 
-.note header h1 {
+.tnote header h1 {
     margin: 0;
     font-size: x-large;
 }
 
-.note header span {
+.tnote header span {
     float: right;
 }
 
-.note header button {
+.tnote header button {
     margin: 0;
     padding: 0;
     font-size: xx-small;
 }
 
-.note article {
+.tnote article {
     padding: 0 10px;
 }
 
-.note footer {
+.tnote footer {
     background-color: lightgrey;
     border-radius: 0 0 7px 7px;
     padding: 4px;
     font-size: .7em;
 }
 
-.note footer ul {
+.tnote footer ul {
     display: inline;
     list-style-type: none;
     padding: 0;
 }
 
-.note footer li {
+.tnote footer li {
     display: inline;
     padding: 0 3px;
 }
 
-.note-edit header p {
+.tnote-edit header p {
     margin: 0;
 }
 
-.note-edit textarea {
+.tnote-edit textarea {
     width: 90%;
     height: 300px;
 }

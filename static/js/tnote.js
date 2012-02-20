@@ -1,222 +1,350 @@
-function Note() {
-    // By convention, the last note div is hidden and cloned for new notes.
-    this.note = $(this.template);
+(function($) {
+    $.widget('tnote.block', {
+        // default options
+        options: {
+        },
 
-    var that = this;
+        _prefix: '',
 
-    this.note.find('.edit-button').button().click(function(event) {
-        event.preventDefault();
-        that.showEdit();
-    });
+        _create: function() {
+            var that = this;
 
-    this.note.find('.done-button').button().click(function(event) {
-        event.preventDefault();
-        that.note.find('.note-edit form').submit();
-    });
+            console.log('Create', this.element);
 
-    this.note.find('.cancel-button').button().click(function(event) {
-        event.preventDefault();
-        // Reset the form items
-        that.title = that.title
-        that.raw = that.raw
-        /* If we don't have any HTML (this is a new note), close it when
-         * cancelled. */
-        if (that.html == null) {
-            that.close();
-        } else {
-            that.showDisplay();
-        }
-    });
+            this.element.addClass('tnote');
+            this._initDisplay();
+        },
 
-    this.note.find('.close-others-button').button().click(function(event) {
-        event.preventDefault();
-        $('.note').not(':last').not(that.note).remove();
-    });
+        _setOption: function(key, value) {
+            console.log('setOption', key, value);
+            switch (key) {
+            }
+            $.Widget.prototype._setOption.call(this, key, value)
+        },
 
-    this.note.find('.close-button').button().click(function(event) {
-        event.preventDefault();
-        that.close();
-    });
+        _destroy: function() {
+            console.log('destroy');
+        },
 
-    this.note.find('.note-edit form').submit(function(event) {
-        event.preventDefault();
-        that.save();
-    });
+        _initDisplay: function() {
+            this._display = $('<div class="tnote-display">')
+                .appendTo(this.element);
+            this._initHeader(this._display);
+            this._initBody(this._display);
+            this._initFooter(this._display);
+        },
 
-    this.clearError();
-}
+        _initHeader: function(display) {
+            var header = $('<header class="ui-widget-header">')
+                .appendTo(display);
+            this._initDisplayToolbar(header);
+            this._displayTitle = $('<h1>').appendTo(header);
+        },
 
-Note.prototype = {
-    prefix: '/note/',
+        _initBody: function(display) {
+            this._displayBody = $('<article>').appendTo(display);
+        },
 
-    template: "<div class='note'>"
-            + "<div class='note-display'>"
-                + "<header class='ui-widget-header'>"
-                    + "<span>"
-                        + "<button class='edit-button'>Edit</button>"
-                        + "<button class='close-others-button'>Close Others</button>"
-                        + "<button class='close-button'>Close</button>"
-                    + "</span>"
-                    + "<h1></h1>"
-                + "</header>"
-                + "<article></article>"
-                + "<footer>"
-                    + "<span class='attachments'>Attachments: <ul></ul></span>"
-                    + "<span class='tags'>Tags: <ul></ul></span>"
-                + "</footer>"
-            + "</div>"
-            + "<div class='note-edit'>"
-                + "<form action='#' method='POST'>"
-                    + "<header class='ui-widget-header'>"
-                        + "<span>"
-                            + "<button class='done-button'>Done</button>"
-                            + "<button class='cancel-button'>Cancel</button>"
-                            + "<button class='close-others-button'>Close Others</button>"
-                            + "<button class='close-button'>Close</button>"
-                        + "</span>"
-                        + "<p>Title: <input type='text' name='title' required/></p>"
-                    + "</header>"
-                    + "<div class='ui-state-error'><ul></ul></div>"
-                    + "<article><textarea name='body'></textarea></article>"
-                    + "<footer>"
-                        + "<span class='attachments'>Attachments: <ul></ul></span>"
-                        + "<span class='tags'>Tags: <input type='text' name='tags'/></span>"
-                    + "</footer>"
-                + "</form>"
-            + "</div>"
-        + "</div>",
+        _initFooter: function(display) {
+            this._displayFooter = $('<footer>').appendTo(display);
+        },
 
-    _title: null,
-    get title() {
-        return this._title;
-    },
-    set title(title) {
-        this._title = title;
-        this.note.attr('id', 'note-' + title);
-        this.note.find('.note-edit form').attr('action', this.prefix + title);
-        this.note.find('.note-display header > h1').empty().append(title);
-        this.note.find('.note-edit header input').val(title);
-    },
+        _initDisplayToolbar: function(header) {
+            this._displayToolbar = $('<span>').appendTo(header);
+            $('<button>Close Others</button>')
+                .appendTo(this._displayToolbar)
+                .button()
+                .click(function(event) {
+                    event.preventDefault();
+                    that.removeOthers();
+                });
+            $('<button>Close</button>')
+                .appendTo(this._displayToolbar)
+                .button()
+                .click(function(event) {
+                    event.preventDefault();
+                    that.remove();
+                });
+        },
 
-    _html: null,
-    get html() {
-        return this._html;
-    },
-    set html(html) {
-        this._html = html;
-        this.note.find('.note-display article').empty().append(html);
-    },
+        _setData: function(data) {
+            this.setTitle(data.title);
+            this.setBody(data.body);
+        },
 
-    _raw: "This page does not exist.",
-    get raw() {
-        return this._raw;
-    },
-    set raw(raw) {
-        this._raw = raw;
-        this.note.find('.note-edit article textarea').val(raw);
-    },
-
-    _attachments: null,
-    get attachments() {
-        return this._attachments;
-    },
-    set attachments(attachments) {
-        this._attachments = attachments;
-        var span = this.note.find('.note-display footer .attachments');
-        var list = span.find('ul').empty();
-        if (attachments.length > 0) {
-            span.show();
-            $.each(attachments, function(i) {
-                list.append('<li><a href="#">' + attachments[i].name
-                            + '</a></li>');
+        load: function(name) {
+            console.log('Load:', name);
+            $.ajax({
+                context: this,
+                url: this._prefix + name,
+                dataType: 'json',
+                success: function(data) {
+                    console.log('Success:', data);
+                    this._setData(data);
+                },
+                error: function(request) {
+                    console.log('Error:', request);
+                },
             });
-        } else {
-            span.hide();
+        },
+
+        removeOthers: function() {
+            $('.note').not(this.element).remove();
+        },
+
+        getTitle: function() {
+            return this._title;
+        },
+        setTitle: function(title) {
+            this._title = title;
+            $(this.element).attr('id', this._class + '-' + title);
+            this._displayTitle.empty().append(title);
+        },
+
+        getBody: function() {
+            return this._body;
+        },
+        setBody: function(body) {
+            this._body = body;
+            this._displayBody.empty().append(body);
+        },
+    });
+
+    $.widget('tnote.tag', $.tnote.block, {
+        _prefix: '/tag/',
+        _class: 'tag',
+
+        setTitle: function(title) {
+            $.tnote.block.prototype.setTitle.call(this, title);
+            this._displayTitle.empty().append('Tag: ' + title);
         }
-    },
+    });
 
-    _tags: null,
-    get tags() {
-        return this._tags;
-    },
-    set tags(tags) {
-        this._tags = tags;
-        var span = this.note.find('.note-display footer .tags');
-        var list = span.find('ul').empty();
-        var input = this.note.find('.note-edit footer .tags input')
-                    .val(tags.join(', '));
+    $.widget('tnote.note', $.tnote.block, {
+        _prefix: '/note/',
+        _class: 'note',
 
-        // Refresh the tags tab on the sidebar
-        $('#menu').tabs('load', 1);
+        _create: function() {
+            $.tnote.block.prototype._create.call(this);
+            this._initEdit();
+            this._edit.hide();
+        },
 
-        if (tags.length > 0) {
-            span.show();
-            $.each(tags, function(i) {
-                list.append('<li><a href="#">' + tags[i] + '</a></li>');
+        _initFooter: function(display) {
+            $.tnote.block.prototype._initFooter.call(this, display);
+            this._initDisplayAttachments(this._displayFooter);
+            this._initDisplayTags(this._displayFooter);
+        },
+
+        _initDisplayToolbar: function(header) {
+            $.tnote.block.prototype._initDisplayToolbar.call(this, header);
+            var that = this;
+            $('<button>Edit</button>')
+                .prependTo(this._displayToolbar)
+                .button()
+                .click(function(event) {
+                    event.preventDefault();
+                    that.showEdit();
+                });
+        },
+
+        _initDisplayAttachments: function(footer) {
+            this._displayAttachments = $('<ul>')
+                .wrap('<span class="tnote-attachments">Attachments:</span>');
+            this._displayAttachments.parent().appendTo(footer);
+        },
+
+        _initDisplayTags: function(footer) {
+            this._displayTags = $('<ul>')
+                .wrap('<span class="tnote-tags">Tags:</span>');
+            this._displayTags.parent().appendTo(footer);
+        },
+
+        _initEdit: function() {
+            this._edit = $('<div class="tnote-edit">')
+                .appendTo(this.element);
+            this._editForm = $('<form action="#" method="POST">')
+                .appendTo(this._edit);
+            this._initEditHeader(this._editForm);
+            this._initEditBody(this._editForm);
+            this._initEditFooter(this._editForm);
+        },
+
+        _initEditHeader: function(edit) {
+            var header = $('<header class="ui-widget-header">').appendTo(edit);
+            this._initEditToolbar(header);
+            this._editTitle = $('<input type="text" name="title" required/>')
+                .wrap('<p>Title: </p>');
+            this._editTitle.parent().appendTo(header);
+        },
+
+        _initEditBody: function(edit) {
+            this._editBody = $('<textarea name="body"></textarea>')
+                .wrap('<article/>');
+            this._editBody.parent().appendTo(edit);
+        },
+
+        _initEditFooter: function(edit) {
+            this._editFooter = $('<footer>').appendTo(edit);
+            this._initEditAttachments(this._editFooter);
+            this._initEditTags(this._editFooter);
+        },
+
+        _initEditToolbar: function(header) {
+            this._editToolbar = $('<span>').appendTo(header);
+            var that = this;
+            $('<button>Done</button>')
+                .appendTo(this._editToolbar)
+                .button()
+                .click(function(event) {
+                    event.preventDefault();
+                    that.save();
+                });
+            $('<button>Cancel</button>')
+                .appendTo(this._editToolbar)
+                .button()
+                .click(function(event) {
+                    event.preventDefault();
+                    /* If there is no body (because this is a brand new note),
+                     * and we cancel, close the note. */
+                    if (that.getBody() == null) {
+                        that.close();
+                    } else {
+                        that.resetForm();
+                        that.showDisplay();
+                    }
+                });
+            $('<button>Close Others</button>')
+                .appendTo(this._editToolbar)
+                .button()
+                .click(function(event) {
+                    event.preventDefault();
+                    that.removeOthers();
+                });
+            $('<button>Close</button>')
+                .appendTo(this._editToolbar)
+                .button()
+                .click(function(event) {
+                    event.preventDefault();
+                    that.remove();
+                });
+        },
+
+        _initEditAttachments: function(footer) {
+            this._editAttachments = $('<ul>')
+                .wrap('<span class="tnote-attachments">Attachments:</span>');
+            this._editAttachments.parent().appendTo(footer);
+        },
+
+        _initEditTags: function(footer) {
+            this._editTags = $('<input type="text" name="tags"/>')
+                .wrap('<span class="tnote-tags">Tags:</span>');
+            this._editTags.parent().appendTo(footer);
+        },
+
+        _setData: function(data) {
+            $.tnote.block.prototype._setData.call(this, data);
+            this.setRaw(data.raw);
+            this.setAttachments(data.attachments);
+            this.setTags(data.tags);
+        },
+
+        save: function() {
+            console.log('Save');
+            if (this._editTitle.val().length == 0) {
+                console.log('Invalid title!');
+                return;
+            }
+            $.ajax({
+                context: this,
+                type: 'POST',
+                url: this._prefix + this.getTitle(),
+                data: this._editForm.serialize(),
+                success: function(data) {
+                    console.log('Success:', data);
+                    this._setData(data);
+                    this.showDisplay();
+                },
+                error: function(request) {
+                    console.log('Error:', request);
+                },
             });
-        } else {
-            span.hide();
-        }
-    },
+        },
 
-    note: null,
+        showDisplay: function() {
+            this._edit.hide();
+            this._display.show();
+        },
 
-    load: function(name) {
-        $.ajax({
-            context: this,
-            url: this.prefix + name,
-            dataType: 'json',
-            context: this,
-            success: function(data) {
-                $.extend(this, data);
-            },
-            error: function(request) {
-                if (request.status == 404) {
-                    this.title = name;
-                    this.showEdit();
-                } else {
-                    console.log('Unknown loading error:', request.status);
-                }
-            },
-        });
-        return this;
-    },
+        showEdit: function() {
+            this._display.hide();
+            this._edit.show();
+        },
 
-    save: function() {
-        var form = this.note.find('.note-edit form');
-        var title = this.note.find('.note-edit header input').val();
+        resetForm: function() {
+            this.setTitle(this.getTitle());
+            this.setRaw(this.getRaw());
+            this.setAttachments(this.getAttachments());
+            this.setTags(this.getTags());
+        },
 
-        this.clearError();
+        setTitle: function(title) {
+            $.tnote.block.prototype.setTitle.call(this, title);
+            this._editTitle.val(title);
+        },
 
-        if (title.length == 0) {
-            console.log('Invalid title!');
-            this.addError('Invalid title');
-            return;
-        }
+        getRaw: function() {
+            return this._raw;
+        },
+        setRaw: function(raw) {
+            this._raw = raw;
+            this._editBody.val(raw);
+        },
 
-        var action = form.attr('action');
-        if (action == '#') {
-            action = this.prefix
-                     + this.note.find('.note-edit header input').val();
-        }
+        getAttachments: function() {
+            return this._attachments;
+        },
+        setAttachments: function(attachments) {
+            this._attachments = attachments;
+            this._displayAttachments.empty();
+            if (attachments.length == 0) {
+                this._displayAttachments.parent().hide();
+            } else {
+                this._displayAttachments.parent().show();
+                var that = this;
+                $.each(attachments, function(i) {
+                    that._displayAttachments.append('<li><a href="#">' + this.name + '</a></li>');
+                });
+            }
+        },
 
-        $.ajax({
-            context: this,
-            type: 'POST',
-            url: action,
-            data: form.serialize(),
-            success: function(data) {
-                $.extend(this, data);
-                this.clearError();
-                this.showDisplay();
-            },
-            error: function(request) {
-                this.addError('Save failed!  Error:' + request.status);
-            },
-        });
-        return this;
-    },
+        getTags: function() {
+            return this._tags;
+        },
+        setTags: function(tags) {
+            this._tags = tags;
 
+            // Refresh the tags tab on the sidebar
+            $('#menu').tabs('load', 1);
+
+            // TODO: Refresh any tag pages open
+
+            this._displayTags.empty();
+            if (tags.length == 0) {
+                this._displayTags.parent().hide();
+            } else {
+                this._displayTags.parent().show();
+                var that = this;
+                $.each(tags, function(i) {
+                    that._displayTags.append('<li><a href="/tag/' + this + '">' + this + '</a></li>');
+                });
+                this._editTags.val(tags.join(', '));
+            }
+        },
+    });
+}(jQuery));
+
+/*
     open: function() {
         this.showDisplay();
         $('#notebook').prepend(this.note);
@@ -227,21 +355,6 @@ Note.prototype = {
         this.note.remove();
         return this;
     },
-
-    showEdit: function() {
-        this.note.show();
-        this.note.find('.note-display').hide();
-        this.note.find('.note-edit').show();
-        return this;
-    },
-
-    showDisplay: function() {
-        this.note.show();
-        this.note.find('.note-edit').hide();
-        this.note.find('.note-display').show();
-        return this;
-    },
-
     addError: function(message) {
         this.note.find('.note-edit .ui-state-error ul')
             .append('<li>' + message + '</li>');
@@ -254,70 +367,49 @@ Note.prototype = {
     },
 };
 
-function TagNote() {
-    Note.call(this);
-}
-TagNote.prototype = Object.create(new Note(), {
-    prefix: { value: '/tag/', writeable: true },
-
-    template: { writable: true, value: "<div class='note'>"
-            + "<div class='note-display'>"
-                + "<header class='ui-widget-header'>"
-                    + "<span>"
-                        + "<button class='close-others-button'>Close Others</button>"
-                        + "<button class='close-button'>Close</button>"
-                    + "</span>"
-                    + "<h1></h1>"
-                + "</header>"
-                + "<article></article>"
-            + "</div>"
-        + "</div>" },
-
-    title: {
-        set: function(title) {
-            this._title = title;
-            this.note.attr('id', 'tag-' + title);
-            this.note.find('.note-display header > h1').empty().append('Tag: ' + title);
-        },
-    },
-});
-
-function wikiLink(event) {
-    var external_re = /^http:\/\//i;
-    var internal_re = /^\//;
-    var note_re = /^\/note\/(.*)/;
-    var tag_re = /^\/tag\/(.*)/;
-    var href = $(this).attr('href');
-    if (external_re.test(href)) {
-        // External link
-        event.target.target = '_blank';
-    } else if (internal_re.test(href)) {
-        // Internal link
-        event.preventDefault();
-        //event.target.href = 'http://google.com';
-        if (note_re.test(href)) {
-            var name = note_re.exec(href)[1];
-            if ($('#note-' + name).length == 0) {
-                new Note().open().showDisplay().load(name);
-            }
-            location.href = '#note-' + name;
-        } else if (tag_re.test(href)) {
-            var name = tag_re.exec(href)[1];
-            if ($('#tag-' + name).length == 0) {
-                new TagNote().open().showDisplay().load(name);
-            }
-            location.href = '#tag-' + name;
-        } else {
-            console.log('Unknown internal link href:', href);
-        }
-    } else {
-        // leave it alone...
-    }
-}
+*/
 
 $(document).ready(function() {
-    // Hide the starting template note.
-    $('.note').hide();
+    function newTag() {
+        return $('<div/>').tag().prependTo($('#notebook'));
+    }
+
+    function newNote() {
+        return $('<div/>').note().prependTo($('#notebook'));
+    }
+
+    function wikiLink(event) {
+        var external_re = /^http:\/\//i;
+        var internal_re = /^\//;
+        var note_re = /^\/note\/(.*)/;
+        var tag_re = /^\/tag\/(.*)/;
+        var href = $(this).attr('href');
+        if (external_re.test(href)) {
+            // External link
+            event.target.target = '_blank';
+        } else if (internal_re.test(href)) {
+            // Internal link
+            event.preventDefault();
+            //event.target.href = 'http://google.com';
+            if (note_re.test(href)) {
+                var name = note_re.exec(href)[1];
+                if ($('#note-' + name).length == 0) {
+                    newNote().note('load', name);
+                }
+                location.href = '#note-' + name;
+            } else if (tag_re.test(href)) {
+                var name = tag_re.exec(href)[1];
+                if ($('#tag-' + name).length == 0) {
+                    newTag().tag('load', name);
+                }
+                location.href = '#tag-' + name;
+            } else {
+                console.log('Unknown internal link href:', href);
+            }
+        } else {
+            // leave it alone...
+        }
+    }
 
     // Initialize the tabs widget in the sidebar.
     $('#menu').tabs({
@@ -356,7 +448,8 @@ $(document).ready(function() {
         text: false,
     });
 
+    // Set up our link click handler
     $('body').on('click', 'a', wikiLink);
 
-    new Note().open().showDisplay().load('Start');
+    newNote().note('load', 'Start');
 });

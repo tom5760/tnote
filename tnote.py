@@ -69,7 +69,7 @@ class TNote(object):
         return bytes(json.dumps({
             'title': title,
             'raw': body,
-            'html': misaka.html(body, self.markdown_extensions),
+            'body': misaka.html(body, self.markdown_extensions),
             'attachments': [],
             'tags': self.get_tags(title),
         }), 'utf-8')
@@ -91,7 +91,7 @@ class TNote(object):
             html.append('</ul>')
             return bytes(json.dumps({
                 'title': tag_name,
-                'html': ''.join(html)
+                'body': ''.join(html)
             }), 'utf-8')
 
     def load_note(self, note):
