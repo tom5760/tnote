@@ -11,7 +11,7 @@
 
             console.log('Create', this.element);
 
-            this.element.addClass('tnote');
+            this.element.addClass('tnote ' + this._class);
             this._initDisplay();
         },
 
@@ -327,7 +327,10 @@
             // Refresh the tags tab on the sidebar
             $('#menu').tabs('load', 1);
 
-            // TODO: Refresh any tag pages open
+            // Refresh any tag pages open
+            $('#notebook > .tag').each(function (i) {
+                $(this).tag('load', $(this).tag('getTitle'));
+            });
 
             this._displayTags.empty();
             if (tags.length == 0) {
