@@ -467,7 +467,6 @@ $(document).ready(function() {
         icons: {primary: 'ui-icon-calendar'},
         text: false,
     }).click(function(event) {
-        var note = new Note();
         var date = new Date();
         var month = date.getMonth() + 1;
         if (month < 10) {
