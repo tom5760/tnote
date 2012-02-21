@@ -60,8 +60,9 @@ class TNote(object):
                 raise cherrypy.HTTPError(404, 'Unknown note {}'.format(name))
         elif cherrypy.request.method == 'POST':
             if name != title:
-                self.rename_note(name, title)
-            self.save_note(title, body, tags)
+                self.rename_note(name, title, body, tags)
+            else:
+                self.save_note(title, body, tags)
         else:
             raise cherrypy.HTTPError(500, 'Unknown method')
 
@@ -114,13 +115,15 @@ class TNote(object):
             tags = []
         self.set_tags(note, tags)
 
-    def rename_note(self, oldname, newname, body):
+    def rename_note(self, oldname, newname, body, tags):
         oldpath = os.path.join(self.note_dir, oldname) + '.md'
         newpath = os.path.join(self.note_dir, newname) + '.md'
         self.repository.mv(oldpath, newpath)
         self.repository.commit('Renamed note "{}" to "{}"'
                 .format(oldname, newname))
         self.rename_note_tags(oldname, newname)
+        if self.repository.dirty():
+            self.save_note(newname, body, tags)
 
     def load_tags(self):
         try:

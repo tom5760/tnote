@@ -72,6 +72,10 @@
             this.setBody(data.body);
         },
 
+        _loadError: function(name, request) {
+            console.log('Error:', request);
+        },
+
         load: function(name) {
             console.log('Load:', name);
             $.ajax({
@@ -83,13 +87,15 @@
                     this._setData(data);
                 },
                 error: function(request) {
-                    console.log('Error:', request);
+                    this._loadError(name, request);
                 },
             });
+            return this;
         },
 
         removeOthers: function() {
             $('.note').not(this.element).remove();
+            return this;
         },
 
         getTitle: function() {
@@ -99,6 +105,7 @@
             this._title = title;
             $(this.element).attr('id', this._class + '-' + title);
             this._displayTitle.empty().append(title);
+            return this;
         },
 
         getBody: function() {
@@ -107,6 +114,7 @@
         setBody: function(body) {
             this._body = body;
             this._displayBody.empty().append(body);
+            return this;
         },
     });
 
@@ -117,6 +125,7 @@
         setTitle: function(title) {
             $.tnote.block.prototype.setTitle.call(this, title);
             this._displayTitle.empty().append('Tag: ' + title);
+            return this;
         }
     });
 
@@ -249,16 +258,30 @@
             this.setTags(data.tags);
         },
 
+        _loadError: function(name, request) {
+            if (request.status == 404) {
+                this.setTitle(name);
+                this.showEdit();
+            } else {
+                $.tnote.block.prototype._loadError.call(this, request);
+            }
+        },
+
         save: function() {
             console.log('Save');
             if (this._editTitle.val().length == 0) {
                 console.log('Invalid title!');
                 return;
             }
+            var title = this.getTitle();
+            if (typeof title == 'undefined') {
+                title = this._editTitle.val();
+            }
+
             $.ajax({
                 context: this,
                 type: 'POST',
-                url: this._prefix + this.getTitle(),
+                url: this._prefix + title,
                 data: this._editForm.serialize(),
                 success: function(data) {
                     console.log('Success:', data);
@@ -269,16 +292,19 @@
                     console.log('Error:', request);
                 },
             });
+            return this;
         },
 
         showDisplay: function() {
             this._edit.hide();
             this._display.show();
+            return this;
         },
 
         showEdit: function() {
             this._display.hide();
             this._edit.show();
+            return this;
         },
 
         resetForm: function() {
@@ -286,11 +312,13 @@
             this.setRaw(this.getRaw());
             this.setAttachments(this.getAttachments());
             this.setTags(this.getTags());
+            return this;
         },
 
         setTitle: function(title) {
             $.tnote.block.prototype.setTitle.call(this, title);
             this._editTitle.val(title);
+            return this;
         },
 
         getRaw: function() {
@@ -299,6 +327,7 @@
         setRaw: function(raw) {
             this._raw = raw;
             this._editBody.val(raw);
+            return this;
         },
 
         getAttachments: function() {
@@ -316,6 +345,7 @@
                     that._displayAttachments.append('<li><a href="#">' + this.name + '</a></li>');
                 });
             }
+            return this;
         },
 
         getTags: function() {
@@ -343,6 +373,7 @@
                 });
                 this._editTags.val(tags.join(', '));
             }
+            return this;
         },
     });
 }(jQuery));
@@ -428,7 +459,7 @@ $(document).ready(function() {
         icons: {primary: 'ui-icon-document'},
         text: false,
     }).click(function(event) {
-        new Note().open().showEdit();
+        newNote().note('showEdit');
     });
 
     $('#new-journal-button').button({
@@ -441,9 +472,9 @@ $(document).ready(function() {
         if (month < 10) {
             month = "0" + month;
         }
-        note.title = date.getFullYear() + '-' + month + '-'
-                     + date.getDate();
-        note.open().showEdit();
+        newNote().note('setTitle',
+            date.getFullYear() + '-' + month + '-' + date.getDate())
+            .note('showEdit');
     });
 
     $('#options-button').button({
