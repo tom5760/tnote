@@ -51,6 +51,7 @@
 
         _initDisplayToolbar: function(header) {
             this._displayToolbar = $('<span>').appendTo(header);
+            var that = this;
             $('<button>Close Others</button>')
                 .appendTo(this._displayToolbar)
                 .button()
@@ -63,7 +64,7 @@
                 .button()
                 .click(function(event) {
                     event.preventDefault();
-                    that.remove();
+                    that.element.remove();
                 });
         },
 
