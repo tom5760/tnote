@@ -218,7 +218,7 @@
                     /* If there is no body (because this is a brand new note),
                      * and we cancel, close the note. */
                     if (that.getBody() == null) {
-                        that.close();
+                        that.element.remove();
                     } else {
                         that.resetForm();
                         that.showDisplay();
