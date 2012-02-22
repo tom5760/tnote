@@ -1,0 +1,22 @@
+<div class="tnote">
+    {% block note %}
+    <div class="tnote-display">
+        <header class="ui-widget-header">
+            <span>
+                {% block toolbar %}
+                <button class="tnote-button-close-others">Close Others</button>
+                <button class="tnote-button-close">Close</button>
+                {% endblock %}
+            </span>
+            {% block title %}
+            <h1>{{ title }}</h1>
+            {% endblock %}
+        </header>
+        <article>{{ body }}</article>
+        <footer>
+            {% block footer %}
+            {% endblock %}
+        </footer>
+    </div>
+    {% endblock %}
+</div>

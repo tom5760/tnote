@@ -13,6 +13,7 @@ import sys
 
 import cherrypy
 import misaka
+import jinja2
 
 import git
 
@@ -30,6 +31,9 @@ class TNote(object):
         self.tag_file = os.path.join(directory, 'tags.json')
 
         self.repository = git.Repository(self.directory)
+
+        self.template_env = jinja2.Environment(loader=jinja2.FileSystemLoader(
+            os.path.join(self.static_dir, 'templates')))
 
         if not os.path.isdir(self.note_dir):
             print('Note directory doesn\'t exist, creating...')
@@ -51,29 +55,32 @@ class TNote(object):
         return cherrypy.lib.static.serve_file(path)
 
     @cherrypy.expose
-    def note(self, name, title=None, body=None, tags=None):
+    def note(self, name=None, title=None, raw=None, tags=None):
+        cherrypy.response.headers['Content-Type'] = 'text/html'
+        vals = {}
         if cherrypy.request.method == 'GET':
-            title = name
-            try:
-                body = self.load_note(name)
-            except IOError:
-                raise cherrypy.HTTPError(404, 'Unknown note {}'.format(name))
+            if name is not None:
+                vals['title'] = name
+                try:
+                    vals['raw'] = self.load_note(name)
+                except IOError:
+                    pass
         elif cherrypy.request.method == 'POST':
-            if name != title:
-                self.rename_note(name, title, body, tags)
+            if name is not None and name != title:
+                self.rename_note(name, title, raw, tags)
             else:
-                self.save_note(title, body, tags)
-        else:
-            raise cherrypy.HTTPError(500, 'Unknown method')
+                self.save_note(title, raw, tags)
+            vals['title'] = title
+            vals['raw'] = raw
 
-        cherrypy.response.headers['Content-Type'] = 'application/json'
-        return bytes(json.dumps({
-            'title': title,
-            'raw': body,
-            'body': misaka.html(body, self.markdown_extensions),
-            'attachments': [],
-            'tags': self.get_tags(title),
-        }), 'utf-8')
+        if 'raw' in vals:
+            vals['body'] = misaka.html(vals['raw'], self.markdown_extensions)
+
+        if 'title' in vals:
+            vals['tags'] = self.get_tags(vals['title'])
+
+        return bytes(self.template_env.get_template('note.html')
+                     .render(vals), 'utf-8')
 
     @cherrypy.expose
     def tag(self, tag_name=None):
@@ -90,7 +97,7 @@ class TNote(object):
                 print('Note:', n)
                 html.append('<li><a href="/note/{0}">{0}</a></li>'.format(n))
             html.append('</ul>')
-            return bytes(json.dumps({
+            return bytes(self.template_env.get_template('tag.html').render({
                 'title': tag_name,
                 'body': ''.join(html)
             }), 'utf-8')

@@ -1,0 +1,50 @@
+{% extends "block.html" %}
+{% block toolbar %}
+    <button class="tnote-button-edit">Edit</button>
+    {{ super() }}
+{% endblock %}
+{% block footer %}
+    <span class="tnote-attachments">Attachments:
+        <ul>
+        {% for at in attachments %}
+            <li><a href="/attachment/{{ at }}">{{ at }}</a></li>
+        {% endfor %}
+        </ul>
+    </span>
+    <span class="tnote-tags">Tags:
+        <ul>
+        {% for tag in tags %}
+            <li><a href="/tag/{{ tag }}">{{ tag }}</a></li>
+        {% endfor %}
+        </ul>
+    </span>
+{% endblock %}
+{% block note %}
+    {{ super() }}
+    <div class="tnote-edit">
+        <form action="#" method="POST">
+            <header class="ui-widget-header">
+                <span>
+                    <button class="tnote-button-done">Done</button>
+                    <button class="tnote-button-cancel">Cancel</button>
+                    <button class="tnote-button-close-others">Close Others</button>
+                    <button class="tnote-button-close">Close</button>
+                </span>
+                <label>Title: <input type="text" name="title" value="{{ title }}" required/></label>
+            </header>
+            <article><textarea name="raw">{{ raw }}</textarea></article>
+            <footer>
+                <span class="tnote-attachments">Attachments:
+                    <ul>
+                    {% for at in attachments %}
+                        <li><a href="/attachment/{{ at }}">{{ at }}</a></li>
+                    {% endfor %}
+                    </ul>
+                </span>
+                <span class="tnote-tags">Tags:
+                    <input type="text" name="tags" value="{{ tags|join(', ') }}"/>
+                </span>
+            </footer>
+        </form>
+    </div>
+{% endblock %}

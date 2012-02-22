@@ -4,6 +4,7 @@
 
 * CherryPy: http://cherrypy.org/
 * misaka: http://misaka.61924.nl/
+* jinja: http://jinja.pocoo.org/
 
 ## Running
 
